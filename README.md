@@ -4,13 +4,13 @@ We are quantitatively assessing the personal networks of people with multiple sc
 
 ## Data Sources
 
-Cohort 1 – University of Pittsburgh
-Cohort 2 – University of Pittsburgh
-Cohort 3 – Columbia University
-Cohort 4 – Columbia University
-Cohort 5 – Yale University
-Cohort 6 – University of Buffalo Medical Center
-Cohort 7 – University of Pennsylvania
+Cohort 1 – University of Pittsburgh\
+Cohort 2 – University of Pittsburgh\
+Cohort 3 – Columbia University\
+Cohort 4 – Columbia University\
+Cohort 5 – Yale University\
+Cohort 6 – University of Buffalo Medical Center\
+Cohort 7 – University of Pennsylvania\
 Cohort 8 – Nationwide cohort (Genes and Environment in Multiple Sclerosis)
 
 ## Data Analysis
