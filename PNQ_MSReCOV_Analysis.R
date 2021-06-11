@@ -1,4 +1,4 @@
-#ANALYSIS PLAN
+#Clearing the environment
 
 detach_all_packages <- function() {
   ##########
