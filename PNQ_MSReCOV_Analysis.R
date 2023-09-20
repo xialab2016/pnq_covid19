@@ -670,69 +670,7 @@ parameterEstimates(fit19.9,standardized=TRUE)
 # LONGITUDINAL ANALYSIS
 
 setwd("/your_working_directory/")
-pnq_old_1 <- fread("Pre_Pandemic PNQ Compilation.csv")
-pnq_old_1$network_survey_2_timestamp <- as.Date(pnq_old_1$network_survey_2_timestamp, '%m/%d/%y')
-pnq_old_1$year <- year(pnq_old_1$network_survey_2_timestamp)
-
-pnq_2020 <- pnq_old_1 %>% filter(pnq_old_1$year == 2020)
-pnq_2020 <- pnq_2020 %>% filter(month(pnq_2020$network_survey_2_timestamp) < 3)
-pnq_2019 <- pnq_old_1 %>% filter(pnq_old_1$year == 2019)
-pnq_2018 <- pnq_old_1 %>% filter(pnq_old_1$year == 2018)
-pnq_2017 <- pnq_old_1 %>% filter(pnq_old_1$year == 2017)
-
-pnq_old <- do.call(rbind, list(pnq_2017, pnq_2018, pnq_2019, pnq_2020))
-
-pnq_old$race_eth <-  case_when(pnq_old$race == "Caucasian" & pnq_old$ethnicity == "Non-Hispanic" ~ 0,
-                               pnq_old$race == "Caucasian" & pnq_old$ethnicity == "Non-Hispanic or Latino" ~ 0,
-                               pnq_old$race == "Caucasian" & pnq_old$ethnicity == "Not Hispanic or Latino" ~ 0,
-                               pnq_old$race == "Caucasian" & pnq_old$ethnicity == "Not Sure" ~ 1,
-                               pnq_old$race == "Caucasian" & pnq_old$ethnicity == "Hispanic or Latino" ~ 1,
-                               pnq_old$race == "Caucasian" & pnq_old$ethnicity == "Not Sure/Not Reported" ~ 1,
-                               pnq_old$race == "African or African American" | pnq_old$race == "American Indian or Alaskan Native" | pnq_old$race == "Asian" | pnq_old$race == "Black" | pnq_old$race == "Other" | pnq_old$race == "Not Sure" | pnq_old$race == "Multiracial" | pnq_old$race == "Multi-racial" | pnq_old$race == "Native Hawaiian or Other Pacific Islander" ~ 1)
-pnq_old$race_eth <- factor(pnq_old$race_eth, levels = c(0,1), labels = c("Caucasian NOT Hispanic or Latino", "Other"))
-
-pnq_old <- as.data.table(pnq_old)[,-c("V1", "race", "ethnicity", "no_doc", "no_med", "neg_prop", "supp_alters_prop", "no_med_prop", "no_doc_prop", "pdds_date", "ds_date", "ds", "promis_physical_date", "promis_physical_tscore", "promis_physical_ste", "msrsr_date")]
-
-setwd("/Users/svenkatesh/Documents/EXPOSOME/RECONCILED DATA")
-promis_physical_1 <- fread("Sheet 4 PROMIS 3.25.2021.csv")
-
-#Summarizing PROMIS values per year, filtering and selecting the median most recent PROMIS
-promis_physical_1$promis_physical_date <- as.Date(promis_physical_1$promis_physical_date, '%m/%d/%y')
-promis_physical_1$year <- year(promis_physical_1$promis_physical_date)
-promis_physical_2020_early <- promis_physical_1 %>% filter(year(promis_physical_1$promis_physical_date) == 2020)
-promis_physical_2020_early <- promis_physical_2020_early %>% filter(month(promis_physical_2020_early$promis_physical_date) < 3)
-promis_physical_2017_2019 <- promis_physical_1 %>% filter(year(promis_physical_1$promis_physical_date) < 2020)
-promis_physical <- rbind(promis_physical_2017_2019, promis_physical_2020_early)
-promis_physical <- promis_physical[,-c(1,3,6)]
-
-promis_summary <- promis_physical %>%
-  mutate_at(vars(-id_participant_l), as.numeric) %>%
-  group_by(id_participant_l, year) %>%
-  summarise(promis_t_score = max(promis_physical_tscore),
-            promis_se = ifelse(promis_t_score == max(promis_physical_tscore), promis_physical_ste),
-            promis_num_observations = n()
-  ) %>% ungroup()
-
-promis_summary <- promis_summary %>% filter(is.na(promis_summary$year)==FALSE)
-
-pnq_old_final <- merge(pnq_old, promis_summary, by = c("id_participant_l", "year"), all.x = TRUE)
-setnames(pnq_old_final, old = c("id_participant_l", "pdds"), new = c("record_id", "fdr"))
-pnq_old_final$characteristic <- case_when(str_detect(pnq_old_final$record_id, "PRT") == 1 ~ 1,
-                                          str_detect(pnq_old_final$record_id, "PIT") == 1 ~ 2,
-                                          str_detect(pnq_old_final$record_id, "CU") == 1 ~ 3,
-                                          str_detect(pnq_old_final$record_id, "YU") == 1 ~ 4,
-                                          str_detect(pnq_old_final$record_id, "BU") == 1 ~ 5,
-                                          str_detect(pnq_old_final$record_id, "PEN") == 1 ~ 6,
-                                          str_detect(pnq_old_final$record_id, "MSH") == 1 ~ 7,
-                                          str_detect(pnq_old_final$record_id, "REF") == 1 ~ 7,
-                                          str_detect(pnq_old_final$record_id, "TNF") == 1 ~ 7,
-                                          str_detect(pnq_old_final$record_id, "MSGEN") == 1 ~ 8,
-                                          TRUE ~ NaN)
-pnq_old_final$characteristic <- factor(pnq_old_final$characteristic, levels = c(1:8), labels = c("Cohort 1", "Cohort 2", "Cohort 4", "Cohort 5", "Cohort 6", "Cohort 7", "Cohort 8", "Cohort 3"))
-pnq_old_final$ms <- factor(pnq_old_final$ms, labels = c("MS", "Control"), levels = c(1,0))
-setnames(pnq_old_final, old = c("constraintInt"), new = c("constraint"))
-
-pnq_old_final <- as.data.table(pnq_old_final)[,c("record_id", "year", "network_survey_2_timestamp", "age", "sex", "race_eth", "education", "employment", "occupation", "income", "married", "live_alone", "household_number", "ms", "ms_dx_age", "ms_date", "ms_dx_symp", "alcohol", "smoke", "exercise", "healthy_diet", "health_problem1", "health_problem2", "health_problem3", "health_problem4", "network_size", "density", "effsize", "max_degree", "mean_degree", "kin_prop", "constraint", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop", "fdr", "ambulation_assistance", "msrs_walking", "msrs_extremeties", "msrs_vision", "msrs_speech", "msrs_swallowing", "msrs_cognition", "msrs_sensory", "msrs_continence", "msrs_total", "promis_t_score", "characteristic")]
+pnq_old_final <- fread("")
 
 #Handling NA Pre-Pandemic Network and Compositional Variables
 
