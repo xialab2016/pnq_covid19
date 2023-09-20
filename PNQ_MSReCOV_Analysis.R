@@ -1595,25 +1595,6 @@ rownames(table_coefs_9) <- table_col_1
 table_coefs_9$table_col <- table_col_1
 table_coefs_9 <- table_coefs_9[,c(5, 1:4)]
 
-#OUTPUT
-setwd("/Users/svenkatesh/Documents/PROMOTE/QUESTIONNAIRES/SOCIAL NETWORK/PAPER 2/ANALYSIS PLAN/TABLES/")
-write.csv(table1_print, file = "Demographics - All Cohorts.csv")
-write.csv(table2_print, file = "Demographics - MS vs Control.csv")
-write.csv(table_coefs_1, file = "Linear Regression 3a.csv")
-write.csv(table_coefs_3, file = "Linear Regression 4a.csv")
-write.csv(table_coefs_4, file = "MS vs Control Regression 5a.csv")
-write.csv(table_coefs_2, file = "PROMIS MS and Control Regression 4a Supplemental.csv")
-write.csv(table3_print, file = "Table 6.csv")
-write.csv(table4_print, file = "Table 7a.csv")
-write.csv(table5_print, file = "Table 7b.csv")
-write.csv(table_coefs_5, file = "Longitudinal Regression 8a.csv")
-write.csv(table_coefs_6, file = "Longitudinal Regression 8b.csv")
-write.csv(table_coefs_7, file = "Longitudinal Regression 9.csv")
-write.csv(table_coefs_8, file = "Longitudinal Regression 10.csv")
-write.csv(table_coefs_9, file = "Longitudinal Regression 11.csv")
-write.csv(table_coefs_10, file = "Longitudinal Regression Control 8a.csv")
-write.csv(table_coefs_11, file = "PROMIS MS and Control Longitudinal Regression.csv")
-
 # 12. Q-Q plot
 
 library(lattice)
@@ -1732,7 +1713,6 @@ qqunif.plot<-function(pvalues,
   )
 }
 
-setwd("/Users/svenkatesh/Documents/PROMOTE/QUESTIONNAIRES/SOCIAL NETWORK/PAPER 2/ANALYSIS PLAN/TABLES/")
 tiff(filename = "QQ_Plot_PDDS_Longitudinal.tiff", width = 3, height = 3, units="in", compression = "lzw", res=300)
 qqunif.plot(-log10(table_coefs_5$`PDDS p value MS`), conf.alpha = 0.05, conf.points = 10000)
 dev.off()
@@ -1742,6 +1722,26 @@ dev.off()
 tiff(filename = "QQ_Plot_PROMIS_Longitudinal.tiff", width = 3, height = 3, units="in", compression = "lzw", res=300)
 qqunif.plot(-log10(table_coefs_5$`PROMIS p value MS`), conf.alpha = 0.05, conf.points = 10000)
 dev.off()
+
+#OUTPUT
+write.csv(table1_print, file = "Demographics - All Cohorts.csv")
+write.csv(table2_print, file = "Demographics - MS vs Control.csv")
+write.csv(table_coefs_1, file = "Linear Regression 3a.csv")
+write.csv(table_coefs_3, file = "Linear Regression 4a.csv")
+write.csv(table_coefs_4, file = "MS vs Control Regression 5a.csv")
+write.csv(table_coefs_2, file = "PROMIS MS and Control Regression 4a Supplemental.csv")
+write.csv(table3_print, file = "Table 6.csv")
+write.csv(table4_print, file = "Table 7a.csv")
+write.csv(table5_print, file = "Table 7b.csv")
+write.csv(table_coefs_5, file = "Longitudinal Regression 8a.csv")
+write.csv(table_coefs_6, file = "Longitudinal Regression 8b.csv")
+write.csv(table_coefs_7, file = "Longitudinal Regression 9.csv")
+write.csv(table_coefs_8, file = "Longitudinal Regression 10.csv")
+write.csv(table_coefs_9, file = "Longitudinal Regression 11.csv")
+write.csv(table_coefs_10, file = "Longitudinal Regression Control 8a.csv")
+write.csv(table_coefs_11, file = "PROMIS MS and Control Longitudinal Regression.csv")
+
+
 
 
 
