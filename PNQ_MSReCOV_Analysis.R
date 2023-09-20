@@ -1,24 +1,4 @@
-#Clearing the environment
-
-detach_all_packages <- function() {
-  ##########
-  # Function: Detatches all attatched packages from current instance of R
-  # Inputs: none, just call the function
-  # Ouputs: none
-  # Credit to mjaniec on stack overflow for function logic
-  ##########  
-  basic.packages <- c("package:stats", "package:graphics", "package:grDevices",
-                      "package:utils", "package:datasets",
-                      "package:methods", "package:base")
-  package.list <- search()[ifelse(unlist(gregexpr("package:",
-                                                  search())) == 1, TRUE, FALSE)]
-  package.list <- setdiff(package.list, basic.packages)
-  if (length(package.list) > 0)  for (package in package.list) detach(package,
-                                                                      character.only = TRUE)
-}
-detach_all_packages()
-
-rm(list = ls())
+# Importing packages
 
 library(data.table)
 library(plyr)
@@ -27,8 +7,8 @@ library(stringr)
 library(lubridate)
 library(tableone)
 
-setwd("/Users/svenkatesh/Documents/PROMOTE/QUESTIONNAIRES/SOCIAL NETWORK/PAPER 2/PANDEMIC PNQ/PROCESSED DATA/")
-pnq_pandemic <- fread("PNQ_Pandemic_Combined_5.8.2021.csv")
+setwd("/your_working_directory/")
+pnq_pandemic <- fread("PNQ_Pandemic_Deidentified.csv")
 
 # 1.	Demographics – All Cohorts (Cohort 1 – Pitt, Cohort 2 – Pitt, Cohort 3 – Columbia, Cohort 4 – Columbia, Cohort 5 – Yale, Cohort 6 – Buffalo, Cohort 7 – Penn, Cohort 8 – GEMS)
 
@@ -416,7 +396,7 @@ pnq_pandemic$ambulation_assistance <- factor(pnq_pandemic$ambulation_assistance,
 pnq_pandemic$network_survey_2_timestamp <- as.Date(pnq_pandemic$network_survey_2_timestamp, "%m/%d/%y")
 pnq_pandemic$year <- year(pnq_pandemic$network_survey_2_timestamp)
 
-pnq_pandemic <- as.data.table(pnq_pandemic)[,c("record_id", "year", "network_survey_2_timestamp", "age", "sex", "race_eth", "education", "zip", "employment", "occupation", "income", "married", "live_alone", "household_number", "ms", "ms_dx_age", "ms_date", "ms_dx_symp", "alcohol", "smoke", "exercise", "healthy_diet", "health_problem1", "health_problem2", "health_problem3", "health_problem4", "network_size", "density", "effsize", "max_degree", "mean_degree", "kin_prop", "constraint", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop", "fdr", "ambulation_assistance", "msrs_walking", "msrs_extremeties", "msrs_vision", "msrs_speech", "msrs_swallowing", "msrs_cognition", "msrs_sensory", "msrs_continence", "msrs_total", "promis_t_score", "characteristic")]
+pnq_pandemic <- as.data.table(pnq_pandemic)[,c("record_id", "year", "network_survey_2_timestamp", "age", "sex", "race_eth", "education", "employment", "occupation", "income", "married", "live_alone", "household_number", "ms", "ms_dx_age", "ms_date", "ms_dx_symp", "alcohol", "smoke", "exercise", "healthy_diet", "health_problem1", "health_problem2", "health_problem3", "health_problem4", "network_size", "density", "effsize", "max_degree", "mean_degree", "kin_prop", "constraint", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop", "fdr", "ambulation_assistance", "msrs_walking", "msrs_extremeties", "msrs_vision", "msrs_speech", "msrs_swallowing", "msrs_cognition", "msrs_sensory", "msrs_continence", "msrs_total", "promis_t_score", "characteristic")]
 
 listVars2 <- c("network_size", "density", "constraint", "effsize", "max_degree", "mean_degree", "kin_prop", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop")
 table3 <- suppressWarnings(CreateTableOne(vars = listVars2, strata = c("ms"), data = pnq_pandemic, test = TRUE, includeNA = FALSE))
@@ -689,7 +669,7 @@ parameterEstimates(fit19.9,standardized=TRUE)
 
 # LONGITUDINAL ANALYSIS
 
-setwd("/Users/svenkatesh/Documents/PROMOTE/QUESTIONNAIRES/SOCIAL NETWORK/PAPER 2/RECONCILED DATA/")
+setwd("/your_working_directory/")
 pnq_old_1 <- fread("Pre_Pandemic PNQ Compilation.csv")
 pnq_old_1$network_survey_2_timestamp <- as.Date(pnq_old_1$network_survey_2_timestamp, '%m/%d/%y')
 pnq_old_1$year <- year(pnq_old_1$network_survey_2_timestamp)
@@ -752,7 +732,7 @@ pnq_old_final$characteristic <- factor(pnq_old_final$characteristic, levels = c(
 pnq_old_final$ms <- factor(pnq_old_final$ms, labels = c("MS", "Control"), levels = c(1,0))
 setnames(pnq_old_final, old = c("constraintInt"), new = c("constraint"))
 
-pnq_old_final <- as.data.table(pnq_old_final)[,c("record_id", "year", "network_survey_2_timestamp", "age", "sex", "race_eth", "education", "zip", "employment", "occupation", "income", "married", "live_alone", "household_number", "ms", "ms_dx_age", "ms_date", "ms_dx_symp", "alcohol", "smoke", "exercise", "healthy_diet", "health_problem1", "health_problem2", "health_problem3", "health_problem4", "network_size", "density", "effsize", "max_degree", "mean_degree", "kin_prop", "constraint", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop", "fdr", "ambulation_assistance", "msrs_walking", "msrs_extremeties", "msrs_vision", "msrs_speech", "msrs_swallowing", "msrs_cognition", "msrs_sensory", "msrs_continence", "msrs_total", "promis_t_score", "characteristic")]
+pnq_old_final <- as.data.table(pnq_old_final)[,c("record_id", "year", "network_survey_2_timestamp", "age", "sex", "race_eth", "education", "employment", "occupation", "income", "married", "live_alone", "household_number", "ms", "ms_dx_age", "ms_date", "ms_dx_symp", "alcohol", "smoke", "exercise", "healthy_diet", "health_problem1", "health_problem2", "health_problem3", "health_problem4", "network_size", "density", "effsize", "max_degree", "mean_degree", "kin_prop", "constraint", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop", "fdr", "ambulation_assistance", "msrs_walking", "msrs_extremeties", "msrs_vision", "msrs_speech", "msrs_swallowing", "msrs_cognition", "msrs_sensory", "msrs_continence", "msrs_total", "promis_t_score", "characteristic")]
 
 #Handling NA Pre-Pandemic Network and Compositional Variables
 
