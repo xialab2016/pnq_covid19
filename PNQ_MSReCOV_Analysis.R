@@ -7,13 +7,13 @@ library(stringr)
 library(lubridate)
 library(tableone)
 
-setwd("/your_working_directory/")
+setwd("~/Downloads/")
 pnq_pandemic <- fread("PNQ_Pandemic_Deidentified.csv")
 
 # 1.	Demographics – All Cohorts (Cohort 1 – Pitt, Cohort 2 – Pitt, Cohort 3 – Columbia, Cohort 4 – Columbia, Cohort 5 – Yale, Cohort 6 – Buffalo, Cohort 7 – Penn, Cohort 8 – GEMS)
 
 listVars1 <- c("age", "sex", "race_eth", "age_firstsx", "dx_duration", "education", "employment", "income", "married", "live_alone", "occupation", "network_size", "fdr", "msrs_total", "promis_t_score")
-table1 <- suppressWarnings(CreateTableOne(vars = listVars1, strata = c("ms", "characteristic"), data = pnq_pandemic, test = TRUE, includeNA = FALSE))
+table1 <- suppressWarnings(CreateTableOne(vars = listVars1, strata = c("ms", "cohort"), data = pnq_pandemic, test = TRUE, includeNA = FALSE))
 table1_print <- print(table1, showAllLevels = TRUE, quote = FALSE, noSpaces = TRUE)
 
 # 2.	Demographics – MS vs Control; grouping all sites together 
@@ -21,7 +21,7 @@ table1_print <- print(table1, showAllLevels = TRUE, quote = FALSE, noSpaces = TR
 table2 <- suppressWarnings(CreateTableOne(vars = listVars1, strata = c("ms"), data = pnq_pandemic, test = TRUE, includeNA = FALSE))
 table2_print <- print(table2, showAllLevels = TRUE, quote = FALSE, noSpaces = TRUE)
 
-# 3.	Cross Sectional Analysis of Network and Compositional Variables – MS
+# CROSS SECTIONAL ANALYSIS
 
 pnq_ms <- pnq_pandemic %>% filter(pnq_pandemic$ms == "MS")
 pnq_ms$education <- factor(pnq_ms$education, labels = c("High school grad", "Some college", "Associate degree", "Bachelor's degree", "Graduate degree"), levels = c("High school grad", "Some college", "Associate degree", "Bachelor's degree", "Graduate degree"))
@@ -32,6 +32,7 @@ pnq_ms$live_alone <- factor(pnq_ms$live_alone, labels = c("Yes", "No"), levels =
 
 pnq_control <- pnq_pandemic %>% filter(pnq_pandemic$ms == "Control")
 
+# Identifying covariates of interest
 # Checking which variables are correlated with neurological outcomes
 
 model1_1 <- lm(fdr ~ age, data=pnq_ms)
@@ -99,7 +100,7 @@ col.pal <- c("#FFFFE5", "#F7FCB9", "#D9F0A3", "#ADDD8E", "#78C679", "#41AB5D", "
 pheatmap(table_0_mat, cluster_cols = F, cluster_rows = F, cexRow = 1, cexCol = 1, angle_col = 0, display_numbers = TRUE, color = col.pal)
 dev.off()
 
-# a.	Linear regression of patient reported outcomes adjusting for age, disease duration, employment and income
+# 3.	Linear regression of patient reported outcomes adjusting for age, disease duration, employment and income
 
 #PDDS
 #Network Size
@@ -225,8 +226,8 @@ model53.1 <- lm(promis_t_score ~ bad_diet_prop + age + dx_duration + employment 
 #Percent who have a negative health influence
 model54.1 <- lm(promis_t_score ~ health_prob_prop + age + dx_duration + employment + income, data=pnq_ms)
 
-table_row_1 <- c("PDDS Beta MS", "PDDS 95% CI MS (lower)", "PDDS 95% CI MS (upper)", "PDDS p value MS", "MSRSR Beta MS", "MSRSR 95% CI MS (lower)", "MSRSR 95% CI MS (upper)", "MSRSR p value MS", "PROMIS Beta MS", "PROMIS 95% CI MS (lower)", "PROMIS 95% CI MS (upper)", "PROMIS p value MS")
-table_col_1 <- c("Size", "Density", "Constraint", "Effective Size", "Maximum Degree", "Mean Degree", "Percent Kin", "SD Age", "Diversity of Sex", "Diversity of Race", "Percent contacted weekly or less", "Percent known for less than 6 years", "Percent who live over 15 miles away", "Percent who drink", "Percent who smoke", "Percent non exercisers", "Percent bad diet", "Percent who have a negative health influence")
+table_col_1 <- c("PDDS Beta MS", "PDDS 95% CI MS (lower)", "PDDS 95% CI MS (upper)", "PDDS p value MS", "MSRSR Beta MS", "MSRSR 95% CI MS (lower)", "MSRSR 95% CI MS (upper)", "MSRSR p value MS", "PROMIS Beta MS", "PROMIS 95% CI MS (lower)", "PROMIS 95% CI MS (upper)", "PROMIS p value MS")
+table_row_1 <- c("Size", "Density", "Constraint", "Effective Size", "Maximum Degree", "Mean Degree", "Percent Kin", "SD Age", "Diversity of Sex", "Diversity of Race", "Percent contacted weekly or less", "Percent known for less than 6 years", "Percent who live over 15 miles away", "Percent who drink", "Percent who smoke", "Percent non exercisers", "Percent bad diet", "Percent who have a negative health influence")
 
 table_pdds_beta_ms_1 <- c(summary(model1.1)$coef[2,1], summary(model2.1)$coef[2,1], summary(model3.1)$coef[2,1], summary(model4.1)$coef[2,1], summary(model5.1)$coef[2,1], summary(model6.1)$coef[2,1], summary(model7.1)$coef[2,1], summary(model8.1)$coef[2,1], summary(model9.1)$coef[2,1], summary(model10.1)$coef[2,1], summary(model11.1)$coef[2,1], summary(model12.1)$coef[2,1], summary(model13.1)$coef[2,1], summary(model14.1)$coef[2,1], summary(model15.1)$coef[2,1], summary(model16.1)$coef[2,1], summary(model17.1)$coef[2,1], summary(model18.1)$coef[2,1])
 table_msrsr_beta_ms_1 <- c(summary(model19.1)$coef[2,1], summary(model20.1)$coef[2,1], summary(model21.1)$coef[2,1], summary(model22.1)$coef[2,1],summary(model23.1)$coef[2,1], summary(model24.1)$coef[2,1], summary(model25.1)$coef[2,1], summary(model26.1)$coef[2,1], summary(model27.1)$coef[2,1], summary(model28.1)$coef[2,1], summary(model29.1)$coef[2,1], summary(model30.1)$coef[2,1], summary(model31.1)$coef[2,1], summary(model32.1)$coef[2,1], summary(model33.1)$coef[2,1], summary(model34.1)$coef[2,1], summary(model35.1)$coef[2,1], summary(model36.1)$coef[2,1])
@@ -246,14 +247,14 @@ table_msrsr_pval_ms_1 <- c(summary(model19.1)$coef[2,4], summary(model20.1)$coef
 table_promis_pval_ms_1 <- c(summary(model37.1)$coef[2,4],summary(model38.1)$coef[2,4],summary(model39.1)$coef[2,4],summary(model40.1)$coef[2,4], summary(model41.1)$coef[2,4],summary(model42.1)$coef[2,4],summary(model43.1)$coef[2,4],summary(model44.1)$coef[2,4], summary(model45.1)$coef[2,4],summary(model46.1)$coef[2,4],summary(model47.1)$coef[2,4],summary(model48.1)$coef[2,4], summary(model49.1)$coef[2,4],summary(model50.1)$coef[2,4],summary(model51.1)$coef[2,4],summary(model52.1)$coef[2,4], summary(model53.1)$coef[2,4],summary(model54.1)$coef[2,4])
 
 table_coefs_1 <- data.table(table_pdds_beta_ms_1, table_pdds_95_ms_1, table_pdds_95_ms_2, table_pdds_pval_ms_1, table_msrsr_beta_ms_1, table_msrsr_95_ms_1, table_msrsr_95_ms_2, table_msrsr_pval_ms_1, table_promis_beta_ms_1, table_promis_95_ms_1, table_promis_95_ms_2, table_promis_pval_ms_1)
-colnames(table_coefs_1) <- table_row_1
-rownames(table_coefs_1) <- table_col_1
+colnames(table_coefs_1) <- table_col_1
+rownames(table_coefs_1) <- table_row_1
 
-table_coefs_1$table_col <- table_col_1
+table_coefs_1$`Network Feature` <- table_row_1
 table_coefs_1 <- table_coefs_1[,c(13, 1:12)]
 
 # 4.	Cross Sectional Analysis of Network and Compositional Variables – Control
-# a.	Linear regression of PROMIS physical function adjusting for age, employment and income
+# Linear regression of PROMIS physical function adjusting for age, employment and income
 
 #PROMIS
 #Network Size
@@ -300,7 +301,7 @@ model53_c <- lm(promis_t_score ~ bad_diet_prop + age + employment + income, data
 pnq_control[is.infinite(pnq_control$health_prob_prop),]$health_prob_prop <- NA
 model54_c <- lm(promis_t_score ~ health_prob_prop + age + employment + income, data=pnq_control)
 
-table_row_2 <- c("PROMIS Beta Control", "PROMIS 95% CI Control (lower)", "PROMIS 95% CI Control (upper)", "PROMIS p value Control")
+table_col_2 <- c("PROMIS Beta Control", "PROMIS 95% CI Control (lower)", "PROMIS 95% CI Control (upper)", "PROMIS p value Control")
 
 table_promis_beta_control_1 <- c(summary(model37_c)$coef[2,1],summary(model38_c)$coef[2,1],summary(model39_c)$coef[2,1],summary(model40_c)$coef[2,1], summary(model41_c)$coef[2,1],summary(model42_c)$coef[2,1],summary(model43_c)$coef[2,1],summary(model44_c)$coef[2,1], summary(model45_c)$coef[2,1],summary(model46_c)$coef[2,1],summary(model47_c)$coef[2,1],summary(model48_c)$coef[2,1], summary(model49_c)$coef[2,1],summary(model50_c)$coef[2,1],summary(model51_c)$coef[2,1],summary(model52_c)$coef[2,1], summary(model53_c)$coef[2,1],summary(model54_c)$coef[2,1])
 table_promis_95_ms_c1 <- c(confint(model37_c, "network_size")[1], confint(model38_c, "density")[1], confint(model39_c, "constraint")[1], confint(model40_c, "effsize")[1], confint(model41_c, "max_degree")[1], confint(model42_c, "mean_degree")[1], confint(model43_c, "kin_prop")[1], confint(model44_c, "age_sd")[1], confint(model45_c, "IQVsex")[1], confint(model46_c, "IQVrace")[1], confint(model47_c, "weak_freq_prop")[1], confint(model48_c, "weak_dur_prop")[1], confint(model49_c, "far_dist_prop")[1], confint(model50_c, "drinking_prop")[1], confint(model51_c, "smoking_prop")[1], confint(model52_c, "no_exercise_prop")[1], confint(model53_c, "bad_diet_prop")[1], confint(model54_c, "health_prob_prop")[1])
@@ -308,14 +309,14 @@ table_promis_95_ms_c2 <- c(confint(model37_c, "network_size")[2], confint(model3
 table_promis_pval_control_1 <- c(summary(model37_c)$coef[2,4],summary(model38_c)$coef[2,4],summary(model39_c)$coef[2,4],summary(model40_c)$coef[2,4], summary(model41_c)$coef[2,4],summary(model42_c)$coef[2,4],summary(model43_c)$coef[2,4],summary(model44_c)$coef[2,4], summary(model45_c)$coef[2,4],summary(model46_c)$coef[2,4],summary(model47_c)$coef[2,4],summary(model48_c)$coef[2,4], summary(model49_c)$coef[2,4],summary(model50_c)$coef[2,4],summary(model51_c)$coef[2,4],summary(model52_c)$coef[2,4], summary(model53_c)$coef[2,4],summary(model54_c)$coef[2,4])
 
 table_coefs_3 <- data.table(table_promis_beta_control_1, table_promis_95_ms_c1, table_promis_95_ms_c2, table_promis_pval_control_1)
-colnames(table_coefs_3) <- table_row_2
-rownames(table_coefs_3) <- table_col_1
+colnames(table_coefs_3) <- table_col_2
+rownames(table_coefs_3) <- table_row_1
 
-table_coefs_3$table_col <- table_col_1
+table_coefs_3$`Network Feature` <- table_row_1
 table_coefs_3 <- table_coefs_3[,c(5, 1:4)]
 
 # 5.	Cross Sectional Analysis of Network and Compositional Variables – MS vs Control
-# a.	Logistic regression of disease status (MS/Control) adjusting for age, sex, race, education, employment, income
+# Logistic regression of disease status (MS/Control) adjusting for age, sex, race, education, employment, income
 
 pnq_pandemic$ms <- factor(pnq_pandemic$ms, levels = c("MS", "Control"), labels = c(1,0))
 
@@ -367,7 +368,7 @@ model17.3 <- glm(ms ~ bad_diet_prop + age + employment + income, data=pnq_pandem
 pnq_pandemic[is.infinite(pnq_pandemic$health_prob_prop),]$health_prob_prop <- NA
 model18.3 <- glm(ms ~ health_prob_prop + age + employment + income, data=pnq_pandemic, family = binomial)
 
-table_row_3 <- c("Beta", "95% CI (lower)", "95% CI (upper)", "p value")
+table_col_3 <- c("Beta", "95% CI (lower)", "95% CI (upper)", "p value")
 
 table_glm_beta <- c(summary(model1.3)$coef[2,1], summary(model2.3)$coef[2,1], summary(model3.3)$coef[2,1], summary(model4.3)$coef[2,1], summary(model5.3)$coef[2,1], summary(model6.3)$coef[2,1], summary(model7.3)$coef[2,1], summary(model8.3)$coef[2,1], summary(model9.3)$coef[2,1], summary(model10.3)$coef[2,1], summary(model11.3)$coef[2,1], summary(model12.3)$coef[2,1], summary(model13.3)$coef[2,1], summary(model14.3)$coef[2,1], summary(model15.3)$coef[2,1], summary(model16.3)$coef[2,1], summary(model17.3)$coef[2,1], summary(model18.3)$coef[2,1])
 table_glm_95_1 <- suppressWarnings(c(confint(model1.3, "network_size")[1], confint(model2.3, "density")[1], confint(model3.3, "constraint")[1], confint(model4.3, "effsize")[1], confint(model5.3, "max_degree")[1], confint(model6.3, "mean_degree")[1], confint(model7.3, "kin_prop")[1], confint(model8.3, "age_sd")[1], confint(model9.3, "IQVsex")[1], confint(model10.3, "IQVrace")[1], confint(model11.3, "weak_freq_prop")[1], confint(model12.3, "weak_dur_prop")[1], confint(model13.3, "far_dist_prop")[1], confint(model14.3, "drinking_prop")[1], confint(model15.3, "smoking_prop")[1], confint(model16.3, "no_exercise_prop")[1], confint(model17.3, "bad_diet_prop")[1], confint(model18.3, "health_prob_prop")[1]))
@@ -375,28 +376,13 @@ table_glm_95_2 <- suppressWarnings(c(confint(model1.3, "network_size")[2], confi
 table_glm_pval <- c(summary(model1.3)$coef[2,4], summary(model2.3)$coef[2,4], summary(model3.3)$coef[2,4], summary(model4.3)$coef[2,4], summary(model5.3)$coef[2,4], summary(model6.3)$coef[2,4], summary(model7.3)$coef[2,4], summary(model8.3)$coef[2,4], summary(model9.3)$coef[2,4], summary(model10.3)$coef[2,4], summary(model11.3)$coef[2,4], summary(model12.3)$coef[2,4], summary(model13.3)$coef[2,4], summary(model14.3)$coef[2,4], summary(model15.3)$coef[2,4], summary(model16.3)$coef[2,4], summary(model17.3)$coef[2,4], summary(model18.3)$coef[2,4])
 
 table_coefs_4 <- data.table(table_glm_beta, table_glm_95_1, table_glm_95_2, table_glm_pval)
-colnames(table_coefs_4) <- table_row_3
-rownames(table_coefs_4) <- table_col_1
+colnames(table_coefs_4) <- table_col_3
+rownames(table_coefs_4) <- table_row_1
 
-table_coefs_4$table_col <- table_col_1
+table_coefs_4$`Network Feature` <- table_row_1
 table_coefs_4 <- table_coefs_4[,c(5, 1:4)]
 
 # 6.	Comparison of Network and Compositional Variables – MS vs Control
-
-pnq_pandemic$ambulation_assistance <- case_when(pnq_pandemic$fdr == 0 ~ 0,
-                                                pnq_pandemic$fdr == 1 ~ 0,
-                                                pnq_pandemic$fdr == 2 ~ 0,
-                                                pnq_pandemic$fdr == 3 ~ 0,
-                                                pnq_pandemic$fdr == 4 ~ 1,
-                                                pnq_pandemic$fdr == 5 ~ 1,
-                                                pnq_pandemic$fdr == 6 ~ 1,
-                                                pnq_pandemic$fdr == 7 ~ 1,
-                                                pnq_pandemic$fdr == 8 ~ 1)
-pnq_pandemic$ambulation_assistance <- factor(pnq_pandemic$ambulation_assistance, levels = c(0:1), labels = c("no ambulation assistance", "ambulation assistance"))
-pnq_pandemic$network_survey_2_timestamp <- as.Date(pnq_pandemic$network_survey_2_timestamp, "%m/%d/%y")
-pnq_pandemic$year <- year(pnq_pandemic$network_survey_2_timestamp)
-
-pnq_pandemic <- as.data.table(pnq_pandemic)[,c("record_id", "year", "network_survey_2_timestamp", "age", "sex", "race_eth", "education", "employment", "occupation", "income", "married", "live_alone", "household_number", "ms", "ms_dx_age", "ms_date", "ms_dx_symp", "alcohol", "smoke", "exercise", "healthy_diet", "health_problem1", "health_problem2", "health_problem3", "health_problem4", "network_size", "density", "effsize", "max_degree", "mean_degree", "kin_prop", "constraint", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop", "fdr", "ambulation_assistance", "msrs_walking", "msrs_extremeties", "msrs_vision", "msrs_speech", "msrs_swallowing", "msrs_cognition", "msrs_sensory", "msrs_continence", "msrs_total", "promis_t_score", "characteristic")]
 
 listVars2 <- c("network_size", "density", "constraint", "effsize", "max_degree", "mean_degree", "kin_prop", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop")
 table3 <- suppressWarnings(CreateTableOne(vars = listVars2, strata = c("ms"), data = pnq_pandemic, test = TRUE, includeNA = FALSE))
@@ -446,10 +432,10 @@ table_glm_95_2_promis <- suppressWarnings(c(confint(model1.2, "network_size")[2]
 table_glm_pval_promis <- c(summary(model1.2)$coef[2,4], summary(model2.2)$coef[2,4], summary(model3.2)$coef[2,4], summary(model4.2)$coef[2,4], summary(model5.2)$coef[2,4], summary(model6.2)$coef[2,4], summary(model7.2)$coef[2,4], summary(model8.2)$coef[2,4], summary(model9.2)$coef[2,4], summary(model10.2)$coef[2,4], summary(model11.2)$coef[2,4], summary(model12.2)$coef[2,4], summary(model13.2)$coef[2,4], summary(model14.2)$coef[2,4], summary(model15.2)$coef[2,4], summary(model16.2)$coef[2,4], summary(model17.2)$coef[2,4], summary(model18.2)$coef[2,4])
 
 table_coefs_2 <- data.table(table_glm_beta_promis, table_glm_95_1_promis, table_glm_95_2_promis, table_glm_pval_promis)
-colnames(table_coefs_2) <- table_row_3
-rownames(table_coefs_2) <- table_col_1
+colnames(table_coefs_2) <- table_col_3
+rownames(table_coefs_2) <- table_row_1
 
-table_coefs_2$table_col <- table_col_1
+table_coefs_2$`Network Feature` <- table_row_1
 table_coefs_2 <- table_coefs_2[,c(5, 1:4)]
 
 # Does MS status mediate the relationship between structural network/compositional variables and PROs?
@@ -457,8 +443,7 @@ table_coefs_2 <- table_coefs_2[,c(5, 1:4)]
 library(lavaan)
 library(semPlot)
 
-model1.9<-'#simple mediation
-ms~a*network_size
+model1.9<-'ms~a*network_size
 promis_t_score~b*ms
 promis_t_score~c*network_size
 #indirect effect
@@ -467,10 +452,8 @@ ab:=a*b
 total:=c+(a*b)'
 fit1.9<-sem(model1.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit1.9,standardized=TRUE)
-semPaths(fit1.9,what="paths",whatLabels="par",rotation=2, style = "lisrel",nodeLabels = c("MS Status", "PROMIS", "Network Size"), intercepts = FALSE, edge.label.cex = 1, label.cex = 2.5)
 
-model2.9<-'#simple mediation
-ms~a*density
+model2.9<-'ms~a*density
 promis_t_score~b*ms
 promis_t_score~c*density
 #indirect effect
@@ -480,8 +463,7 @@ total:=c+(a*b)'
 fit2.9<-sem(model2.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit2.9,standardized=TRUE)
 
-model3.9<-'#simple mediation
-ms~a*constraint
+model3.9<-'ms~a*constraint
 promis_t_score~b*ms
 promis_t_score~c*constraint
 #indirect effect
@@ -491,8 +473,7 @@ total:=c+(a*b)'
 fit3.9<-sem(model3.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit3.9,standardized=TRUE)
 
-model4.9<-'#simple mediation
-ms~a*effsize
+model4.9<-'ms~a*effsize
 promis_t_score~b*ms
 promis_t_score~c*effsize
 #indirect effect
@@ -502,8 +483,7 @@ total:=c+(a*b)'
 fit4.9<-sem(model4.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit4.9,standardized=TRUE)
 
-model5.9<-'#simple mediation
-ms~a*max_degree
+model5.9<-'ms~a*max_degree
 promis_t_score~b*ms
 promis_t_score~c*max_degree
 #indirect effect
@@ -513,8 +493,7 @@ total:=c+(a*b)'
 fit5.9<-sem(model5.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit5.9,standardized=TRUE)
 
-model6.9<-'#simple mediation
-ms~a*mean_degree
+model6.9<-'ms~a*mean_degree
 promis_t_score~b*ms
 promis_t_score~c*mean_degree
 #indirect effect
@@ -524,8 +503,7 @@ total:=c+(a*b)'
 fit6.9<-sem(model6.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit6.9,standardized=TRUE)
 
-model7.9<-'#simple mediation
-ms~a*kin_prop
+model7.9<-'ms~a*kin_prop
 promis_t_score~b*ms
 promis_t_score~c*kin_prop
 #indirect effect
@@ -535,8 +513,7 @@ total:=c+(a*b)'
 fit7.9<-sem(model7.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit7.9,standardized=TRUE)
 
-model8.9<-'#simple mediation
-ms~a*age_sd
+model8.9<-'ms~a*age_sd
 promis_t_score~b*ms
 promis_t_score~c*age_sd
 #indirect effect
@@ -546,8 +523,7 @@ total:=c+(a*b)'
 fit8.9<-sem(model8.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit8.9,standardized=TRUE)
 
-model9.9<-'#simple mediation
-ms~a*IQVsex
+model9.9<-'ms~a*IQVsex
 promis_t_score~b*ms
 promis_t_score~c*IQVsex
 #indirect effect
@@ -557,8 +533,7 @@ total:=c+(a*b)'
 fit9.9<-sem(model9.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit9.9,standardized=TRUE)
 
-model10.9<-'#simple mediation
-ms~a*IQVrace
+model10.9<-'ms~a*IQVrace
 promis_t_score~b*ms
 promis_t_score~c*IQVrace
 #indirect effect
@@ -568,8 +543,7 @@ total:=c+(a*b)'
 fit10.9<-sem(model10.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit10.9,standardized=TRUE)
 
-model11.9<-'#simple mediation
-ms~a*weak_freq_prop
+model11.9<-'ms~a*weak_freq_prop
 promis_t_score~b*ms
 promis_t_score~c*weak_freq_prop
 #indirect effect
@@ -579,8 +553,7 @@ total:=c+(a*b)'
 fit11.9<-sem(model11.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit11.9,standardized=TRUE)
 
-model12.9<-'#simple mediation
-ms~a*weak_dur_prop
+model12.9<-'ms~a*weak_dur_prop
 promis_t_score~b*ms
 promis_t_score~c*weak_dur_prop
 #indirect effect
@@ -590,8 +563,7 @@ total:=c+(a*b)'
 fit12.9<-sem(model12.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit12.9,standardized=TRUE)
 
-model13.9<-'#simple mediation
-ms~a*far_dist_prop
+model13.9<-'ms~a*far_dist_prop
 promis_t_score~b*ms
 promis_t_score~c*far_dist_prop
 #indirect effect
@@ -601,8 +573,7 @@ total:=c+(a*b)'
 fit13.9<-sem(model13.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit13.9,standardized=TRUE)
 
-model14.9<-'#simple mediation
-ms~a*drinking_prop
+model14.9<-'ms~a*drinking_prop
 promis_t_score~b*ms
 promis_t_score~c*drinking_prop
 #indirect effect
@@ -612,8 +583,7 @@ total:=c+(a*b)'
 fit14.9<-sem(model14.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit14.9,standardized=TRUE)
 
-model15.9<-'#simple mediation
-ms~a*drinking_prop
+model15.9<-'ms~a*drinking_prop
 promis_t_score~b*ms
 promis_t_score~c*drinking_prop
 #indirect effect
@@ -623,8 +593,7 @@ total:=c+(a*b)'
 fit15.9<-sem(model15.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit15.9,standardized=TRUE)
 
-model16.9<-'#simple mediation
-ms~a*smoking_prop
+model16.9<-'ms~a*smoking_prop
 promis_t_score~b*ms
 promis_t_score~c*smoking_prop
 #indirect effect
@@ -634,8 +603,7 @@ total:=c+(a*b)'
 fit16.9<-sem(model16.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit16.9,standardized=TRUE)
 
-model17.9<-'#simple mediation
-ms~a*no_exercise_prop
+model17.9<-'ms~a*no_exercise_prop
 promis_t_score~b*ms
 promis_t_score~c*no_exercise_prop
 #indirect effect
@@ -645,8 +613,7 @@ total:=c+(a*b)'
 fit17.9<-sem(model17.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit17.9,standardized=TRUE)
 
-model18.9<-'#simple mediation
-ms~a*bad_diet_prop
+model18.9<-'ms~a*bad_diet_prop
 promis_t_score~b*ms
 promis_t_score~c*bad_diet_prop
 #indirect effect
@@ -656,8 +623,7 @@ total:=c+(a*b)'
 fit18.9<-sem(model18.9,data=pnq_pandemic,ordered=c("ms"))
 parameterEstimates(fit18.9,standardized=TRUE)
 
-model19.9<-'#simple mediation
-ms~a*health_prob_prop
+model19.9<-'ms~a*health_prob_prop
 promis_t_score~b*ms
 promis_t_score~c*health_prob_prop
 #indirect effect
@@ -669,53 +635,9 @@ parameterEstimates(fit19.9,standardized=TRUE)
 
 # LONGITUDINAL ANALYSIS
 
-setwd("/your_working_directory/")
-pnq_old_final <- fread("")
-
-#Handling NA Pre-Pandemic Network and Compositional Variables
-
-#Percent Kin
-pnq_old_final[is.infinite(pnq_old_final$kin_prop),]$kin_prop <- NA
-#Percent contacted weekly or less
-pnq_old_final[is.infinite(pnq_old_final$weak_freq_prop),]$weak_freq_prop <- NA
-pnq_old_final$weak_freq_prop <- as.numeric(pnq_old_final$weak_freq_prop)
-#Percent known for less than 6 years
-pnq_old_final[is.infinite(pnq_old_final$weak_dur_prop),]$weak_dur_prop <- NA
-#Percent who live over 15 miles away
-pnq_old_final[is.infinite(pnq_old_final$far_dist_prop),]$far_dist_prop <- NA
-#Percent who drink
-pnq_old_final[is.infinite(pnq_old_final$drinking_prop),]$drinking_prop <- NA
-#Percent who smoke
-pnq_old_final[is.infinite(pnq_old_final$smoking_prop),]$smoking_prop <- NA
-#Percent non exercisers
-pnq_old_final[is.infinite(pnq_old_final$no_exercise_prop),]$no_exercise_prop <- NA
-#Percent bad diet
-pnq_old_final[is.infinite(pnq_old_final$bad_diet_prop),]$bad_diet_prop <- NA
-#Percent who have a negative health influence
-pnq_old_final[is.infinite(pnq_old_final$health_prob_prop),]$health_prob_prop <- NA
-
-pnq_pandemic$pandemic <- "During Pandemic"
-pnq_old_final$pandemic <- "Pre-Pandemic"
-
-pnq_all <- rbind(pnq_pandemic, pnq_old_final)
-
 # 7.	Longitudinal Analysis – Individual Paired T Tests for Network and Compositional variables pre-pandemic and during pandemic – MS vs Control
 
-#Getting the most recent pre-pandemic data
-pnq_old_final_no2020 <- subset(pnq_old_final, (pnq_old_final$record_id %in% pnq_pandemic$record_id))
-pnq_old_final_no2020$month <- month(pnq_old_final_no2020$network_survey_2_timestamp)
-pnq_old_final_no2020$day <- day(pnq_old_final_no2020$network_survey_2_timestamp)
-pnq_old_pre1 <- pnq_old_final_no2020 %>% 
-  group_by(record_id) %>%
-  filter(year == max(year),
-         month == max(month),
-         day == max(day)) %>% ungroup()
-pnq_old_pre1 <- subset(pnq_old_pre1, (pnq_old_pre1$record_id %in% pnq_pandemic$record_id))
-
-pnq_pandemic_noprior <- subset(pnq_pandemic, (pnq_pandemic$record_id %in% pnq_old_pre1$record_id))
-pnq_pandemic_noprior <- distinct(pnq_pandemic_noprior, record_id, .keep_all = TRUE)
-
-pnq_all_two_sample <- rbind(pnq_old_pre1, pnq_pandemic_noprior, fill = TRUE)
+pnq_all_two_sample <- fread("Longitudinal PNQ Two Sample.csv")
 
 #Create table of network metrics stratified by MS diagnosis and pandemic status
 pnq_all_two_sample_ms <- pnq_all_two_sample %>% filter(pnq_all_two_sample$ms == "MS")
@@ -729,33 +651,7 @@ table5_print <- print(table5, showAllLevels = TRUE, quote = FALSE, noSpaces = TR
 
 # 8.	Longitudinal Analysis – Change in Network and Compositional variables from pre-pandemic to during pandemic vs Neurological Outcomes (most recent)
 
-pnq_all_time <- merge(pnq_old_pre1, pnq_pandemic_noprior, by = "record_id", all = TRUE)
-pnq_all_time$network_size_change <- pnq_all_time$network_size.y - pnq_all_time$network_size.x
-pnq_all_time$density_change <- pnq_all_time$density.y - pnq_all_time$density.x
-pnq_all_time$constraint_change <- pnq_all_time$constraint.y - pnq_all_time$constraint.x
-pnq_all_time$effsize_change <- pnq_all_time$effsize.y - pnq_all_time$effsize.x
-pnq_all_time$max_degree_change <- pnq_all_time$max_degree.y - pnq_all_time$max_degree.x
-pnq_all_time$mean_degree_change <- pnq_all_time$mean_degree.y - pnq_all_time$mean_degree.x
-pnq_all_time$kin_prop_change <- pnq_all_time$kin_prop.y - pnq_all_time$kin_prop.x
-pnq_all_time$age_sd_change <- pnq_all_time$age_sd.y - pnq_all_time$age_sd.x
-pnq_all_time$IQVsex_change <- pnq_all_time$IQVsex.y - pnq_all_time$IQVsex.x
-pnq_all_time$IQVrace_change <- pnq_all_time$IQVrace.y - pnq_all_time$IQVrace.x
-pnq_all_time$weak_freq_prop_change <- pnq_all_time$weak_freq_prop.y - pnq_all_time$weak_freq_prop.x
-pnq_all_time$weak_dur_prop_change <- pnq_all_time$weak_dur_prop.y - pnq_all_time$weak_dur_prop.x
-pnq_all_time$far_dist_prop_change <- pnq_all_time$far_dist_prop.y - pnq_all_time$far_dist_prop.x
-pnq_all_time$drinking_prop_change <- pnq_all_time$drinking_prop.y - pnq_all_time$drinking_prop.x
-pnq_all_time$smoking_prop_change <- pnq_all_time$smoking_prop.y - pnq_all_time$smoking_prop.x
-pnq_all_time$no_exercise_prop_change <- pnq_all_time$no_exercise_prop.y - pnq_all_time$no_exercise_prop.x
-pnq_all_time$bad_diet_prop_change <- pnq_all_time$bad_diet_prop.y - pnq_all_time$bad_diet_prop.x
-pnq_all_time$health_prob_prop_change <- pnq_all_time$health_prob_prop.y - pnq_all_time$health_prob_prop.x
-pnq_all_time$year_change <- 2020 - pnq_all_time$year.x
-pnq_all_time$ms_dx_symp.y <- as.Date(pnq_all_time$ms_dx_symp.y, format = "%m/%d/%y")
-pnq_all_time$dx_duration <- difftime("2020-7-1", pnq_all_time$ms_dx_symp.y, units = "weeks")/52
-
-pnq_all_time <- as.data.table(pnq_all_time)[,c("record_id", "age.y", "sex.y", "race_eth.y", "education.y", "employment.y", "income.y", "ms.y", "dx_duration", "characteristic.y", "year_change", "network_size_change", "density_change", "constraint_change", "effsize_change", "max_degree_change", "mean_degree_change", "kin_prop_change", "age_sd_change", "IQVsex_change", "IQVrace_change", "weak_freq_prop_change", "weak_dur_prop_change", "far_dist_prop_change", "drinking_prop_change", "smoking_prop_change", "no_exercise_prop_change", "bad_diet_prop_change", "health_prob_prop_change", "fdr.y", "ambulation_assistance.y", "msrs_total.y", "promis_t_score.y")]
-
-setnames(pnq_all_time, old = c("age.y", "sex.y", "race_eth.y", "education.y", "employment.y", "income.y", "ms.y", "characteristic.y", "fdr.y", "ambulation_assistance.y", "msrs_total.y", "promis_t_score.y"), new = c("age", "sex", "race_eth", "education", "employment", "income", "ms", "characteristic", "fdr", "ambulation_assistance", "msrs_total", "promis_t_score"))
-
+pnq_all_time <- fread("PNQ Change.csv")
 pnq_all_time_ms <- pnq_all_time %>% filter(pnq_all_time$ms == "MS")
 pnq_all_time_control <- pnq_all_time %>% filter(pnq_all_time$ms == "Control")
 
@@ -763,127 +659,127 @@ pnq_all_time_control <- pnq_all_time %>% filter(pnq_all_time$ms == "Control")
 
 #PDDS
 #Network Size
-model1.4 <- lm(fdr ~ network_size_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model1.4 <- lm(fdr ~ network_size_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Density
-model2.4 <- lm(fdr ~ density_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model2.4 <- lm(fdr ~ density_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Constraint
-model3.4 <- lm(fdr ~ constraint_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model3.4 <- lm(fdr ~ constraint_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Effective Size
-model4.4 <- lm(fdr ~ effsize_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model4.4 <- lm(fdr ~ effsize_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Maximum Degree
-model5.4 <- lm(fdr ~ max_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model5.4 <- lm(fdr ~ max_degree_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Mean Degree
-model6.4 <- lm(fdr ~ mean_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model6.4 <- lm(fdr ~ mean_degree_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent Kin
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$kin_prop_change),]$kin_prop_change <- NA
-model7.4 <- lm(fdr ~ kin_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model7.4 <- lm(fdr ~ kin_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Standard deviation of age
-model8.4 <- lm(fdr ~ age_sd_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model8.4 <- lm(fdr ~ age_sd_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Diversity of Sex
-model9.4 <- lm(fdr ~ IQVsex_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model9.4 <- lm(fdr ~ IQVsex_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Diversity of Race
-model10.4 <- lm(fdr ~ IQVrace_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model10.4 <- lm(fdr ~ IQVrace_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent contacted weekly or less
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$weak_freq_prop_change),]$weak_freq_prop_change <- NA
 pnq_all_time_ms$weak_freq_prop_change <- as.numeric(pnq_all_time_ms$weak_freq_prop_change)
-model11.4 <- lm(fdr ~ weak_freq_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model11.4 <- lm(fdr ~ weak_freq_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent known for less than 6 years
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$weak_dur_prop_change),]$weak_dur_prop_change <- NA
-model12.4 <- lm(fdr ~ weak_dur_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model12.4 <- lm(fdr ~ weak_dur_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who live over 15 miles away
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$far_dist_prop_change),]$far_dist_prop_change <- NA
-model13.4 <- lm(fdr ~ far_dist_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model13.4 <- lm(fdr ~ far_dist_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who drink
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$drinking_prop_change),]$drinking_prop_change <- NA
-model14.4 <- lm(fdr ~ drinking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model14.4 <- lm(fdr ~ drinking_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who smoke
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$smoking_prop_change),]$smoking_prop_change <- NA
-model15.4 <- lm(fdr ~ smoking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model15.4 <- lm(fdr ~ smoking_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent non exercisers
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$no_exercise_prop_change),]$no_exercise_prop_change <- NA
-model16.4 <- lm(fdr ~ no_exercise_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model16.4 <- lm(fdr ~ no_exercise_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent bad diet
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$bad_diet_prop_change),]$bad_diet_prop_change <- NA
-model17.4 <- lm(fdr ~ bad_diet_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model17.4 <- lm(fdr ~ bad_diet_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who have a negative health influence
 pnq_all_time_ms[is.infinite(pnq_all_time_ms$health_prob_prop_change),]$health_prob_prop_change <- NA
-model18.4 <- lm(fdr ~ health_prob_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model18.4 <- lm(fdr ~ health_prob_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 
 #MSRSR
 #Network Size
-model19.4 <- lm(msrs_total ~ network_size_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model19.4 <- lm(msrs_total ~ network_size_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Density
-model20.4 <- lm(msrs_total ~ density_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model20.4 <- lm(msrs_total ~ density_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Constraint
-model21.4 <- lm(msrs_total ~ constraint_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model21.4 <- lm(msrs_total ~ constraint_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Effective Size
-model22.4 <- lm(msrs_total ~ effsize_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model22.4 <- lm(msrs_total ~ effsize_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Maximum Degree
-model23.4 <- lm(msrs_total ~ max_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model23.4 <- lm(msrs_total ~ max_degree_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Mean Degree
-model24.4 <- lm(msrs_total ~ mean_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model24.4 <- lm(msrs_total ~ mean_degree_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent Kin
-model25.4 <- lm(msrs_total ~ kin_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model25.4 <- lm(msrs_total ~ kin_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Standard deviation of age
-model26.4 <- lm(msrs_total ~ age_sd_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model26.4 <- lm(msrs_total ~ age_sd_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Diversity of Sex
-model27.4 <- lm(msrs_total ~ IQVsex_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model27.4 <- lm(msrs_total ~ IQVsex_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Diversity of Race
-model28.4 <- lm(msrs_total ~ IQVrace_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model28.4 <- lm(msrs_total ~ IQVrace_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent contacted weekly or less
-model29.4 <- lm(msrs_total ~ weak_freq_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model29.4 <- lm(msrs_total ~ weak_freq_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent known for less than 6 years
-model30.4 <- lm(msrs_total ~ weak_dur_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model30.4 <- lm(msrs_total ~ weak_dur_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who live over 15 miles away
-model31.4 <- lm(msrs_total ~ far_dist_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model31.4 <- lm(msrs_total ~ far_dist_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who drink
-model32.4 <- lm(msrs_total ~ drinking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model32.4 <- lm(msrs_total ~ drinking_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who smoke
-model33.4 <- lm(msrs_total ~ smoking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model33.4 <- lm(msrs_total ~ smoking_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent non exercisers
-model34.4 <- lm(msrs_total ~ no_exercise_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model34.4 <- lm(msrs_total ~ no_exercise_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent bad diet
-model35.4 <- lm(msrs_total ~ bad_diet_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model35.4 <- lm(msrs_total ~ bad_diet_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who have a negative health influence
-model36.4 <- lm(msrs_total ~ health_prob_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model36.4 <- lm(msrs_total ~ health_prob_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 
 #PROMIS
 #Network Size
-model37.4 <- lm(promis_t_score ~ network_size_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model37.4 <- lm(promis_t_score ~ network_size_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Density
-model38.4 <- lm(promis_t_score ~ density_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model38.4 <- lm(promis_t_score ~ density_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Constraint
-model39.4 <- lm(promis_t_score ~ constraint_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model39.4 <- lm(promis_t_score ~ constraint_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Effective Size
-model40.4 <- lm(promis_t_score ~ effsize_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model40.4 <- lm(promis_t_score ~ effsize_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Maximum Degree
-model41.4 <- lm(promis_t_score ~ max_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model41.4 <- lm(promis_t_score ~ max_degree_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Mean Degree
-model42.4 <- lm(promis_t_score ~ mean_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model42.4 <- lm(promis_t_score ~ mean_degree_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent Kin
-model43.4 <- lm(promis_t_score ~ kin_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model43.4 <- lm(promis_t_score ~ kin_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Standard deviation of age
-model44.4 <- lm(promis_t_score ~ age_sd_change + age + sex + education + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model44.4 <- lm(promis_t_score ~ age_sd_change + age + sex + education + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Diversity of Sex
-model45.4 <- lm(promis_t_score ~ IQVsex_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model45.4 <- lm(promis_t_score ~ IQVsex_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Diversity of Race
-model46.4 <- lm(promis_t_score ~ IQVrace_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model46.4 <- lm(promis_t_score ~ IQVrace_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent contacted weekly or less
-model47.4 <- lm(promis_t_score ~ weak_freq_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model47.4 <- lm(promis_t_score ~ weak_freq_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent known for less than 6 years
-model48.4 <- lm(promis_t_score ~ weak_dur_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model48.4 <- lm(promis_t_score ~ weak_dur_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who live over 15 miles away
-model49.4 <- lm(promis_t_score ~ far_dist_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model49.4 <- lm(promis_t_score ~ far_dist_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who drink
-model50.4 <- lm(promis_t_score ~ drinking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model50.4 <- lm(promis_t_score ~ drinking_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who smoke
-model51.4 <- lm(promis_t_score ~ smoking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model51.4 <- lm(promis_t_score ~ smoking_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent non exercisers
-model52.4 <- lm(promis_t_score ~ no_exercise_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model52.4 <- lm(promis_t_score ~ no_exercise_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent bad diet
-model53.4 <- lm(promis_t_score ~ bad_diet_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model53.4 <- lm(promis_t_score ~ bad_diet_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Percent who have a negative health influence
-model54.4 <- lm(promis_t_score ~ health_prob_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model54.4 <- lm(promis_t_score ~ health_prob_prop_change + age + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 
 table_pdds_beta_ms_time <- c(summary(model1.4)$coef[2,1], summary(model2.4)$coef[2,1], summary(model3.4)$coef[2,1], summary(model4.4)$coef[2,1], summary(model5.4)$coef[2,1], summary(model6.4)$coef[2,1], summary(model7.4)$coef[2,1], summary(model8.4)$coef[2,1], summary(model9.4)$coef[2,1], summary(model10.4)$coef[2,1], summary(model11.4)$coef[2,1], summary(model12.4)$coef[2,1], summary(model13.4)$coef[2,1], summary(model14.4)$coef[2,1], summary(model15.4)$coef[2,1], summary(model16.4)$coef[2,1], summary(model17.4)$coef[2,1], summary(model18.4)$coef[2,1])
 table_msrsr_beta_ms_time <- c(summary(model19.4)$coef[2,1], summary(model20.4)$coef[2,1], summary(model21.4)$coef[2,1], summary(model22.4)$coef[2,1],summary(model23.4)$coef[2,1], summary(model24.4)$coef[2,1], summary(model25.4)$coef[2,1], summary(model26.4)$coef[2,1], summary(model27.4)$coef[2,1], summary(model28.4)$coef[2,1], summary(model29.4)$coef[2,1], summary(model30.4)$coef[2,1], summary(model31.4)$coef[2,1], summary(model32.4)$coef[2,1], summary(model33.4)$coef[2,1], summary(model34.4)$coef[2,1], summary(model35.4)$coef[2,1], summary(model36.4)$coef[2,1])
@@ -903,51 +799,51 @@ table_msrsr_pval_ms_time <- c(summary(model19.4)$coef[2,4], summary(model20.4)$c
 table_promis_pval_ms_time <- c(summary(model37.4)$coef[2,4],summary(model38.4)$coef[2,4],summary(model39.4)$coef[2,4],summary(model40.4)$coef[2,4], summary(model41.4)$coef[2,4],summary(model42.4)$coef[2,4],summary(model43.4)$coef[2,4],summary(model44.4)$coef[2,4], summary(model45.4)$coef[2,4],summary(model46.4)$coef[2,4],summary(model47.4)$coef[2,4],summary(model48.4)$coef[2,4], summary(model49.4)$coef[2,4],summary(model50.4)$coef[2,4],summary(model51.4)$coef[2,4],summary(model52.4)$coef[2,4], summary(model53.4)$coef[2,4],summary(model54.4)$coef[2,4])
 
 table_coefs_5 <- data.table(table_pdds_beta_ms_time, table_pdds_ci_ms_time_1, table_pdds_ci_ms_time_2, table_pdds_pval_ms_time, table_msrsr_beta_ms_time, table_msrsr_ci_ms_time_1, table_msrsr_ci_ms_time_2, table_msrsr_pval_ms_time, table_promis_beta_ms_time, table_promis_ci_ms_time_1, table_promis_ci_ms_time_2, table_promis_pval_ms_time)
-colnames(table_coefs_5) <- table_row_1
-rownames(table_coefs_5) <- table_col_1
+colnames(table_coefs_5) <- table_col_1
+rownames(table_coefs_5) <- table_row_1
 
-table_coefs_5$table_col <- table_col_1
+table_coefs_5$`Network Feature` <- table_row_1
 table_coefs_5 <- table_coefs_5[,c(13, 1:12)]
 
 #Control
 
 #PROMIS
 #Network Size
-model37_c1 <- lm(promis_t_score ~ network_size_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model37_c1 <- lm(promis_t_score ~ network_size_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Density
-model38_c1 <- lm(promis_t_score ~ density_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model38_c1 <- lm(promis_t_score ~ density_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Constraint
-model39_c1 <- lm(promis_t_score ~ constraint_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model39_c1 <- lm(promis_t_score ~ constraint_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Effective Size
-model40_c1 <- lm(promis_t_score ~ effsize_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model40_c1 <- lm(promis_t_score ~ effsize_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Maximum Degree
-model41_c1 <- lm(promis_t_score ~ max_degree_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model41_c1 <- lm(promis_t_score ~ max_degree_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Mean Degree
-model42_c1 <- lm(promis_t_score ~ mean_degree_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model42_c1 <- lm(promis_t_score ~ mean_degree_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent Kin
-model43_c1 <- lm(promis_t_score ~ kin_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model43_c1 <- lm(promis_t_score ~ kin_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Standard deviation of age
-model44_c1 <- lm(promis_t_score ~ age_sd_change + age + sex + education + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_ms)
+model44_c1 <- lm(promis_t_score ~ age_sd_change + age + sex + education + employment + income + dx_duration + cohort + year_change, data=pnq_all_time_ms)
 #Diversity of Sex
-model45_c1 <- lm(promis_t_score ~ IQVsex_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model45_c1 <- lm(promis_t_score ~ IQVsex_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Diversity of Race
-model46_c1 <- lm(promis_t_score ~ IQVrace_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model46_c1 <- lm(promis_t_score ~ IQVrace_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent contacted weekly or less
-model47_c1 <- lm(promis_t_score ~ weak_freq_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model47_c1 <- lm(promis_t_score ~ weak_freq_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent known for less than 6 years
-model48_c1 <- lm(promis_t_score ~ weak_dur_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model48_c1 <- lm(promis_t_score ~ weak_dur_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent who live over 15 miles away
-model49_c1 <- lm(promis_t_score ~ far_dist_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model49_c1 <- lm(promis_t_score ~ far_dist_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent who drink
-model50_c1 <- lm(promis_t_score ~ drinking_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model50_c1 <- lm(promis_t_score ~ drinking_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent who smoke
-model51_c1 <- lm(promis_t_score ~ smoking_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model51_c1 <- lm(promis_t_score ~ smoking_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent non exercisers
-model52_c1 <- lm(promis_t_score ~ no_exercise_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model52_c1 <- lm(promis_t_score ~ no_exercise_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent bad diet
-model53_c1 <- lm(promis_t_score ~ bad_diet_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model53_c1 <- lm(promis_t_score ~ bad_diet_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 #Percent who have a negative health influence
-model54_c1 <- lm(promis_t_score ~ health_prob_prop_change + age + employment + income + characteristic + year_change, data=pnq_all_time_control)
+model54_c1 <- lm(promis_t_score ~ health_prob_prop_change + age + employment + income + cohort + year_change, data=pnq_all_time_control)
 
 table_promis_beta_c1 <- c(summary(model37_c1)$coef[2,1],summary(model38_c1)$coef[2,1],summary(model39_c1)$coef[2,1],summary(model40_c1)$coef[2,1], summary(model41_c1)$coef[2,1],summary(model42_c1)$coef[2,1],summary(model43_c1)$coef[2,1],summary(model44_c1)$coef[2,1], summary(model45_c1)$coef[2,1],summary(model46_c1)$coef[2,1],summary(model47_c1)$coef[2,1],summary(model48_c1)$coef[2,1], summary(model49_c1)$coef[2,1],summary(model50_c1)$coef[2,1],summary(model51_c1)$coef[2,1],summary(model52_c1)$coef[2,1], summary(model53_c1)$coef[2,1],summary(model54_c1)$coef[2,1])
 
@@ -956,12 +852,12 @@ table_promis_ci_c2 <- c(confint(model37_c1, "network_size_change")[2], confint(m
 
 table_promis_pval_c1 <- c(summary(model37_c1)$coef[2,4],summary(model38_c1)$coef[2,4],summary(model39_c1)$coef[2,4],summary(model40_c1)$coef[2,4], summary(model41_c1)$coef[2,4],summary(model42_c1)$coef[2,4],summary(model43_c1)$coef[2,4],summary(model44_c1)$coef[2,4], summary(model45_c1)$coef[2,4],summary(model46_c1)$coef[2,4],summary(model47_c1)$coef[2,4],summary(model48_c1)$coef[2,4], summary(model49_c1)$coef[2,4],summary(model50_c1)$coef[2,4],summary(model51_c1)$coef[2,4],summary(model52_c1)$coef[2,4], summary(model53_c1)$coef[2,4],summary(model54_c1)$coef[2,4])
 
-table_coefs_10 <- data.table(table_promis_beta_c1, table_promis_ci_c1, table_promis_ci_c2, table_promis_pval_c1)
-colnames(table_coefs_10) <- c("Beta", "95% CI (lower)", "95% CI (upper)", "P value")
-rownames(table_coefs_10) <- table_col_1
+table_coefs_6 <- data.table(table_promis_beta_c1, table_promis_ci_c1, table_promis_ci_c2, table_promis_pval_c1)
+colnames(table_coefs_6) <- c("Beta", "95% CI (lower)", "95% CI (upper)", "P value")
+rownames(table_coefs_6) <- table_row_1
 
-table_coefs_10$table_col <- table_col_1
-table_coefs_10 <- table_coefs_10[,c(5, 1:4)]
+table_coefs_6$`Network Feature` <- table_row_1
+table_coefs_6 <- table_coefs_6[,c(5, 1:4)]
 
 #Subset of covariates
 
@@ -1106,14 +1002,14 @@ table_pdds_pval_ms_time_1 <- c(summary(model1.5)$coef[2,4], summary(model2.5)$co
 table_msrsr_pval_ms_time_1 <- c(summary(model19.5)$coef[2,4], summary(model20.5)$coef[2,4], summary(model21.5)$coef[2,4], summary(model22.5)$coef[2,4],summary(model23.5)$coef[2,4], summary(model24.5)$coef[2,4], summary(model25.5)$coef[2,4], summary(model26.5)$coef[2,4], summary(model27.5)$coef[2,4], summary(model28.5)$coef[2,4], summary(model29.5)$coef[2,4], summary(model30.5)$coef[2,4], summary(model31.5)$coef[2,4], summary(model32.5)$coef[2,4], summary(model33.5)$coef[2,4], summary(model34.5)$coef[2,4], summary(model35.5)$coef[2,4], summary(model36.5)$coef[2,4])
 table_promis_pval_ms_time_1 <- c(summary(model37.5)$coef[2,4],summary(model38.5)$coef[2,4],summary(model39.5)$coef[2,4],summary(model40.5)$coef[2,4], summary(model41.5)$coef[2,4],summary(model42.5)$coef[2,4],summary(model43.5)$coef[2,4],summary(model44.5)$coef[2,4], summary(model45.5)$coef[2,4],summary(model46.5)$coef[2,4],summary(model47.5)$coef[2,4],summary(model48.5)$coef[2,4], summary(model49.5)$coef[2,4],summary(model50.5)$coef[2,4],summary(model51.5)$coef[2,4],summary(model52.5)$coef[2,4], summary(model53.5)$coef[2,4],summary(model54.5)$coef[2,4])
 
-table_coefs_6 <- data.table(table_pdds_beta_ms_time_1, table_pdds_ci_ms_time_3, table_pdds_ci_ms_time_4, table_pdds_pval_ms_time_1, table_msrsr_beta_ms_time_1, table_msrsr_ci_ms_time_3, table_msrsr_ci_ms_time_4, table_msrsr_pval_ms_time_1, table_promis_beta_ms_time_1, table_promis_ci_ms_time_3, table_promis_ci_ms_time_4, table_promis_pval_ms_time_1)
-colnames(table_coefs_6) <- table_row_1
-rownames(table_coefs_6) <- table_col_1
+table_coefs_7 <- data.table(table_pdds_beta_ms_time_1, table_pdds_ci_ms_time_3, table_pdds_ci_ms_time_4, table_pdds_pval_ms_time_1, table_msrsr_beta_ms_time_1, table_msrsr_ci_ms_time_3, table_msrsr_ci_ms_time_4, table_msrsr_pval_ms_time_1, table_promis_beta_ms_time_1, table_promis_ci_ms_time_3, table_promis_ci_ms_time_4, table_promis_pval_ms_time_1)
+colnames(table_coefs_7) <- table_col_1
+rownames(table_coefs_7) <- table_row_1
 
-table_coefs_6$table_col <- table_col_1
-table_coefs_6 <- table_coefs_6[,c(13, 1:12)]
+table_coefs_7$`Network Feature` <- table_row_1
+table_coefs_7 <- table_coefs_7[,c(13, 1:12)]
 
-#Longitudinal Analysis – Pre-pandemic Network and Compositional variables prediction of during pandemic neurological outcomes - MS vs Control
+# 9. Longitudinal Analysis – Association Between Pre-pandemic Network and Compositional Variables and During Pandemic Outcomes - MS vs Control
 
 #PROMIS
 #Network Size
@@ -1160,442 +1056,15 @@ table_promis_ci.101 <- c(confint(model37.10, "network_size_change")[2], confint(
 
 table_promis_pval.10 <- c(summary(model37.10)$coef[2,4],summary(model38.10)$coef[2,4],summary(model39.10)$coef[2,4],summary(model40.10)$coef[2,4], summary(model41.10)$coef[2,4],summary(model42.10)$coef[2,4],summary(model43.10)$coef[2,4],summary(model44.10)$coef[2,4], summary(model45.10)$coef[2,4],summary(model46.10)$coef[2,4],summary(model47.10)$coef[2,4],summary(model48.10)$coef[2,4], summary(model49.10)$coef[2,4],summary(model50.10)$coef[2,4],summary(model51.10)$coef[2,4],summary(model52.10)$coef[2,4], summary(model53.10)$coef[2,4],summary(model54.10)$coef[2,4])
 
-table_coefs_11 <- data.table(table_promis_beta.10, table_promis_ci.10, table_promis_ci.101, table_promis_pval.10)
-colnames(table_coefs_11) <- c("Beta", "95% CI (lower)", "95% CI (upper)", "P value")
-rownames(table_coefs_11) <- table_col_1
+table_coefs_8 <- data.table(table_promis_beta.10, table_promis_ci.10, table_promis_ci.101, table_promis_pval.10)
+colnames(table_coefs_8) <- c("Beta", "95% CI (lower)", "95% CI (upper)", "P value")
+rownames(table_coefs_8) <- table_row_1
 
-table_coefs_11$table_col <- table_col_1
-table_coefs_11 <- table_coefs_11[,c(5, 1:4)]
-
-# 9.	Longitudinal Analysis – Pre-pandemic Network and Compositional variables prediction of during pandemic neurological outcomes
-
-pnq_all_time_1 <- merge(pnq_old_pre1, pnq_pandemic_noprior, by = "record_id", all = TRUE)
-pnq_all_time_1$year_change <- 2020 - pnq_all_time_1$year.x
-pnq_all_time_1$ms_dx_symp.y <- as.Date(pnq_all_time_1$ms_dx_symp.y, format = "%m/%d/%y")
-pnq_all_time_1$dx_duration <- difftime("2020-7-1", pnq_all_time_1$ms_dx_symp.y, units = "weeks")/52
-pnq_all_time_1 <- as.data.table(pnq_all_time_1)[,c("record_id", "age.x", "sex.x", "race_eth.x", "education.x", "employment.x", "income.x", "ms.x", "dx_duration", "characteristic.x", "year_change", "network_size.x", "density.x", "constraint.x", "effsize.x", "max_degree.x", "mean_degree.x", "kin_prop.x", "age_sd.x", "IQVsex.x", "IQVrace.x", "weak_freq_prop.x", "weak_dur_prop.x", "far_dist_prop.x", "drinking_prop.x", "smoking_prop.x", "no_exercise_prop.x", "bad_diet_prop.x", "health_prob_prop.x", "fdr.y", "ambulation_assistance.y", "msrs_total.y", "promis_t_score.y")]
-
-setnames(pnq_all_time_1, old = c("age.x", "sex.x", "race_eth.x", "education.x", "employment.x", "income.x", "ms.x",  "characteristic.x", "network_size.x", "density.x", "constraint.x", "effsize.x", "max_degree.x", "mean_degree.x", "kin_prop.x", "age_sd.x", "IQVsex.x", "IQVrace.x", "weak_freq_prop.x", "weak_dur_prop.x", "far_dist_prop.x", "drinking_prop.x", "smoking_prop.x", "no_exercise_prop.x", "bad_diet_prop.x", "health_prob_prop.x", "fdr.y", "ambulation_assistance.y", "msrs_total.y", "promis_t_score.y"), new = c("age", "sex", "race_eth", "education", "employment", "income", "ms", "characteristic", "network_size", "density", "constraint", "effsize", "max_degree", "mean_degree", "kin_prop", "age_sd", "IQVsex", "IQVrace", "weak_freq_prop", "weak_dur_prop", "far_dist_prop", "drinking_prop", "smoking_prop", "no_exercise_prop", "bad_diet_prop", "health_prob_prop", "fdr", "ambulation_assistance", "msrs_total", "promis_t_score"))
-
-pnq_all_time_ms_1 <- pnq_all_time_1 %>% filter(pnq_all_time_1$ms == "MS")
-pnq_all_time_control_1 <- pnq_all_time_1 %>% filter(pnq_all_time_1$ms == "Control")
-
-#PDDS
-#Network Size
-model1.6 <- lm(fdr ~ network_size + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Density
-model2.6 <- lm(fdr ~ density + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Constraint
-model3.6 <- lm(fdr ~ constraint + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Effective Size
-model4.6 <- lm(fdr ~ effsize + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Maximum Degree
-model5.6 <- lm(fdr ~ max_degree + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Mean Degree
-model6.6 <- lm(fdr ~ mean_degree + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent Kin
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$kin_prop),]$kin_prop <- NA
-model7.6 <- lm(fdr ~ kin_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Standard deviation of age
-model8.6 <- lm(fdr ~ age_sd + age + sex + education + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Diversity of Sex
-model9.6 <- lm(fdr ~ IQVsex + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Diversity of Race
-model10.6 <- lm(fdr ~ IQVrace + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent contacted weekly or less
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$weak_freq_prop),]$weak_freq_prop <- NA
-pnq_all_time_ms_1$weak_freq_prop <- as.numeric(pnq_all_time_ms_1$weak_freq_prop)
-model11.6 <- lm(fdr ~ weak_freq_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent known for less than 6 years
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$weak_dur_prop),]$weak_dur_prop <- NA
-model12.6 <- lm(fdr ~ weak_dur_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who live over 15 miles away
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$far_dist_prop),]$far_dist_prop <- NA
-model13.6 <- lm(fdr ~ far_dist_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who drink
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$drinking_prop),]$drinking_prop <- NA
-model14.6 <- lm(fdr ~ drinking_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who smoke
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$smoking_prop),]$smoking_prop <- NA
-model15.6 <- lm(fdr ~ smoking_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent non exercisers
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$no_exercise_prop),]$no_exercise_prop <- NA
-model16.6 <- lm(fdr ~ no_exercise_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent bad diet
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$bad_diet_prop),]$bad_diet_prop <- NA
-model17.6 <- lm(fdr ~ bad_diet_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who have a negative health influence
-pnq_all_time_ms_1[is.infinite(pnq_all_time_ms_1$health_prob_prop),]$health_prob_prop <- NA
-model18.6 <- lm(fdr ~ health_prob_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-
-#MSRSR
-#Network Size
-model19.6 <- lm(msrs_total ~ network_size + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Density
-model20.6 <- lm(msrs_total ~ density + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Constraint
-model21.6 <- lm(msrs_total ~ constraint + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Effective Size
-model22.6 <- lm(msrs_total ~ effsize + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Maximum Degree
-model23.6 <- lm(msrs_total ~ max_degree + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Mean Degree
-model24.6 <- lm(msrs_total ~ mean_degree + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent Kin
-model25.6 <- lm(msrs_total ~ kin_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Standard deviation of age
-model26.6 <- lm(msrs_total ~ age_sd + age + sex + education + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Diversity of Sex
-model27.6 <- lm(msrs_total ~ IQVsex + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Diversity of Race
-model28.6 <- lm(msrs_total ~ IQVrace + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent contacted weekly or less
-model29.6 <- lm(msrs_total ~ weak_freq_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent known for less than 6 years
-model30.6 <- lm(msrs_total ~ weak_dur_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who live over 15 miles away
-model31.6 <- lm(msrs_total ~ far_dist_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who drink
-model32.6 <- lm(msrs_total ~ drinking_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who smoke
-model33.6 <- lm(msrs_total ~ smoking_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent non exercisers
-model34.6 <- lm(msrs_total ~ no_exercise_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent bad diet
-model35.6 <- lm(msrs_total ~ bad_diet_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who have a negative health influence
-model36.6 <- lm(msrs_total ~ health_prob_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-
-#PROMIS
-#Network Size
-model37.6 <- lm(promis_t_score ~ network_size + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Density
-model38.6 <- lm(promis_t_score ~ density + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Constraint
-model39.6 <- lm(promis_t_score ~ constraint + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Effective Size
-model40.6 <- lm(promis_t_score ~ effsize + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Maximum Degree
-model41.6 <- lm(promis_t_score ~ max_degree + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Mean Degree
-model42.6 <- lm(promis_t_score ~ mean_degree + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent Kin
-model43.6 <- lm(promis_t_score ~ kin_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Standard deviation of age
-model44.6 <- lm(promis_t_score ~ age_sd + age + sex + education + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Diversity of Sex
-model45.6 <- lm(promis_t_score ~ IQVsex + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Diversity of Race
-model46.6 <- lm(promis_t_score ~ IQVrace + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent contacted weekly or less
-model47.6 <- lm(promis_t_score ~ weak_freq_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent known for less than 6 years
-model48.6 <- lm(promis_t_score ~ weak_dur_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who live over 15 miles away
-model49.6 <- lm(promis_t_score ~ far_dist_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who drink
-model50.6 <- lm(promis_t_score ~ drinking_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who smoke
-model51.6 <- lm(promis_t_score ~ smoking_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent non exercisers
-model52.6 <- lm(promis_t_score ~ no_exercise_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent bad diet
-model53.6 <- lm(promis_t_score ~ bad_diet_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-#Percent who have a negative health influence
-model54.6 <- lm(promis_t_score ~ health_prob_prop + age + employment + income + dx_duration, data=pnq_all_time_ms_1)
-
-table_pdds_beta_time_3 <- c(summary(model1.6)$coef[2,1], summary(model2.6)$coef[2,1], summary(model3.6)$coef[2,1], summary(model4.6)$coef[2,1], summary(model5.6)$coef[2,1], summary(model6.6)$coef[2,1], summary(model7.6)$coef[2,1], summary(model8.6)$coef[2,1], summary(model9.6)$coef[2,1], summary(model10.6)$coef[2,1], summary(model11.6)$coef[2,1], summary(model12.6)$coef[2,1], summary(model13.6)$coef[2,1], summary(model14.6)$coef[2,1], summary(model15.6)$coef[2,1], summary(model16.6)$coef[2,1], summary(model17.6)$coef[2,1], summary(model18.6)$coef[2,1])
-table_msrsr_beta_time_3 <- c(summary(model19.6)$coef[2,1], summary(model20.6)$coef[2,1], summary(model21.6)$coef[2,1], summary(model22.6)$coef[2,1],summary(model23.6)$coef[2,1], summary(model24.6)$coef[2,1], summary(model25.6)$coef[2,1], summary(model26.6)$coef[2,1], summary(model27.6)$coef[2,1], summary(model28.6)$coef[2,1], summary(model29.6)$coef[2,1], summary(model30.6)$coef[2,1], summary(model31.6)$coef[2,1], summary(model32.6)$coef[2,1], summary(model33.6)$coef[2,1], summary(model34.6)$coef[2,1], summary(model35.6)$coef[2,1], summary(model36.6)$coef[2,1])
-table_promis_beta_time_3 <- c(summary(model37.6)$coef[2,1],summary(model38.6)$coef[2,1],summary(model39.6)$coef[2,1],summary(model40.6)$coef[2,1], summary(model41.6)$coef[2,1],summary(model42.6)$coef[2,1],summary(model43.6)$coef[2,1],summary(model44.6)$coef[2,1], summary(model45.6)$coef[2,1],summary(model46.6)$coef[2,1],summary(model47.6)$coef[2,1],summary(model48.6)$coef[2,1], summary(model49.6)$coef[2,1],summary(model50.6)$coef[2,1],summary(model51.6)$coef[2,1],summary(model52.6)$coef[2,1], summary(model53.6)$coef[2,1],summary(model54.6)$coef[2,1])
-
-table_pdds_se_time_3 <- c(summary(model1.6)$coef[2,2], summary(model2.6)$coef[2,2], summary(model3.6)$coef[2,2], summary(model4.6)$coef[2,2], summary(model5.6)$coef[2,2], summary(model6.6)$coef[2,2], summary(model7.6)$coef[2,2], summary(model8.6)$coef[2,2], summary(model9.6)$coef[2,2], summary(model10.6)$coef[2,2], summary(model11.6)$coef[2,2], summary(model12.6)$coef[2,2], summary(model13.6)$coef[2,2], summary(model14.6)$coef[2,2], summary(model15.6)$coef[2,2], summary(model16.6)$coef[2,2], summary(model17.6)$coef[2,2], summary(model18.6)$coef[2,2])
-table_msrsr_se_time_3 <- c(summary(model19.6)$coef[2,2], summary(model20.6)$coef[2,2], summary(model21.6)$coef[2,2], summary(model22.6)$coef[2,2],summary(model23.6)$coef[2,2], summary(model24.6)$coef[2,2], summary(model25.6)$coef[2,2], summary(model26.6)$coef[2,2], summary(model27.6)$coef[2,2], summary(model28.6)$coef[2,2], summary(model29.6)$coef[2,2], summary(model30.6)$coef[2,2], summary(model31.6)$coef[2,2], summary(model32.6)$coef[2,2], summary(model33.6)$coef[2,2], summary(model34.6)$coef[2,2], summary(model35.6)$coef[2,2], summary(model36.6)$coef[2,2])
-table_promis_se_time_3 <- c(summary(model37.6)$coef[2,2],summary(model38.6)$coef[2,2],summary(model39.6)$coef[2,2],summary(model40.6)$coef[2,2], summary(model41.6)$coef[2,2],summary(model42.6)$coef[2,2],summary(model43.6)$coef[2,2],summary(model44.6)$coef[2,2], summary(model45.6)$coef[2,2],summary(model46.6)$coef[2,2],summary(model47.6)$coef[2,2],summary(model48.6)$coef[2,2], summary(model49.6)$coef[2,2],summary(model50.6)$coef[2,2],summary(model51.6)$coef[2,2],summary(model52.6)$coef[2,2], summary(model53.6)$coef[2,2],summary(model54.6)$coef[2,2])
-
-table_pdds_pval_time_3 <- c(summary(model1.6)$coef[2,4], summary(model2.6)$coef[2,4], summary(model3.6)$coef[2,4], summary(model4.6)$coef[2,4], summary(model5.6)$coef[2,4], summary(model6.6)$coef[2,4], summary(model7.6)$coef[2,4], summary(model8.6)$coef[2,4], summary(model9.6)$coef[2,4], summary(model10.6)$coef[2,4], summary(model11.6)$coef[2,4], summary(model12.6)$coef[2,4], summary(model13.6)$coef[2,4], summary(model14.6)$coef[2,4], summary(model15.6)$coef[2,4], summary(model16.6)$coef[2,4], summary(model17.6)$coef[2,4], summary(model18.6)$coef[2,4])
-table_msrsr_pval_time_3 <- c(summary(model19.6)$coef[2,4], summary(model20.6)$coef[2,4], summary(model21.6)$coef[2,4], summary(model22.6)$coef[2,4],summary(model23.6)$coef[2,4], summary(model24.6)$coef[2,4], summary(model25.6)$coef[2,4], summary(model26.6)$coef[2,4], summary(model27.6)$coef[2,4], summary(model28.6)$coef[2,4], summary(model29.6)$coef[2,4], summary(model30.6)$coef[2,4], summary(model31.6)$coef[2,4], summary(model32.6)$coef[2,4], summary(model33.6)$coef[2,4], summary(model34.6)$coef[2,4], summary(model35.6)$coef[2,4], summary(model36.6)$coef[2,4])
-table_promis_pval_time_3 <- c(summary(model37.6)$coef[2,4],summary(model38.6)$coef[2,4],summary(model39.6)$coef[2,4],summary(model40.6)$coef[2,4], summary(model41.6)$coef[2,4],summary(model42.6)$coef[2,4],summary(model43.6)$coef[2,4],summary(model44.6)$coef[2,4], summary(model45.6)$coef[2,4],summary(model46.6)$coef[2,4],summary(model47.6)$coef[2,4],summary(model48.6)$coef[2,4], summary(model49.6)$coef[2,4],summary(model50.6)$coef[2,4],summary(model51.6)$coef[2,4],summary(model52.6)$coef[2,4], summary(model53.6)$coef[2,4],summary(model54.6)$coef[2,4])
-
-table_coefs_7 <- data.table(table_pdds_beta_time_3, table_pdds_se_time_3, table_pdds_pval_time_3, table_msrsr_beta_time_3, table_msrsr_se_time_3, table_msrsr_pval_time_3, table_promis_beta_time_3, table_promis_se_time_3, table_promis_pval_time_3)
-colnames(table_coefs_7) <- table_row_1
-rownames(table_coefs_7) <- table_col_1
-
-table_coefs_7$table_col <- table_col_1
-table_coefs_7 <- table_coefs_7[,c(10, 1:9)]
+table_coefs_8$`Network Feature` <- table_row_1
+table_coefs_8 <- table_coefs_8[,c(5, 1:4)]
 
 
-# 10.	Longitudinal Analysis – Change in Network and Compositional variables from pre-pandemic to during pandemic vs Change in Neurological Outcomes pre-pandemic to during pandemic
-
-pnq_all_time_2 <- merge(pnq_old_pre1, pnq_pandemic_noprior, by = "record_id", all = TRUE)
-pnq_all_time_2$network_size_change <- pnq_all_time_2$network_size.y - pnq_all_time_2$network_size.x
-pnq_all_time_2$density_change <- pnq_all_time_2$density.y - pnq_all_time_2$density.x
-pnq_all_time_2$constraint_change <- pnq_all_time_2$constraint.y - pnq_all_time_2$constraint.x
-pnq_all_time_2$effsize_change <- pnq_all_time_2$effsize.y - pnq_all_time_2$effsize.x
-pnq_all_time_2$max_degree_change <- pnq_all_time_2$max_degree.y - pnq_all_time_2$max_degree.x
-pnq_all_time_2$mean_degree_change <- pnq_all_time_2$mean_degree.y - pnq_all_time_2$mean_degree.x
-pnq_all_time_2$kin_prop_change <- pnq_all_time_2$kin_prop.y - pnq_all_time_2$kin_prop.x
-pnq_all_time_2$age_sd_change <- pnq_all_time_2$age_sd.y - pnq_all_time_2$age_sd.x
-pnq_all_time_2$IQVsex_change <- pnq_all_time_2$IQVsex.y - pnq_all_time_2$IQVsex.x
-pnq_all_time_2$IQVrace_change <- pnq_all_time_2$IQVrace.y - pnq_all_time_2$IQVrace.x
-pnq_all_time_2$weak_freq_prop_change <- pnq_all_time_2$weak_freq_prop.y - pnq_all_time_2$weak_freq_prop.x
-pnq_all_time_2$weak_dur_prop_change <- pnq_all_time_2$weak_dur_prop.y - pnq_all_time_2$weak_dur_prop.x
-pnq_all_time_2$far_dist_prop_change <- pnq_all_time_2$far_dist_prop.y - pnq_all_time_2$far_dist_prop.x
-pnq_all_time_2$drinking_prop_change <- pnq_all_time_2$drinking_prop.y - pnq_all_time_2$drinking_prop.x
-pnq_all_time_2$smoking_prop_change <- pnq_all_time_2$smoking_prop.y - pnq_all_time_2$smoking_prop.x
-pnq_all_time_2$no_exercise_prop_change <- pnq_all_time_2$no_exercise_prop.y - pnq_all_time_2$no_exercise_prop.x
-pnq_all_time_2$bad_diet_prop_change <- pnq_all_time_2$bad_diet_prop.y - pnq_all_time_2$bad_diet_prop.x
-pnq_all_time_2$health_prob_prop_change <- pnq_all_time_2$health_prob_prop.y - pnq_all_time_2$health_prob_prop.x
-pnq_all_time_2$fdr_change <- pnq_all_time_2$fdr.y - pnq_all_time_2$fdr.x
-pnq_all_time_2$msrs_total_change <- pnq_all_time_2$msrs_total.y - pnq_all_time_2$msrs_total.x
-pnq_all_time_2$promis_t_score_change <- pnq_all_time_2$promis_t_score.y - pnq_all_time_2$promis_t_score.x
-pnq_all_time_2$year_change <- 2020 - pnq_all_time_2$year.x
-pnq_all_time_2$ms_dx_symp.y <- as.Date(pnq_all_time_2$ms_dx_symp.y, format = "%m/%d/%y")
-pnq_all_time_2$dx_duration <- difftime("2020-7-1", pnq_all_time_2$ms_dx_symp.y, units = "weeks")/52
-
-pnq_all_time_2 <- as.data.table(pnq_all_time_2)[,c("record_id", "age.y", "sex.y", "race_eth.y", "education.y", "employment.y", "income.y", "ms.y", "dx_duration", "characteristic.y", "year_change", "network_size_change", "density_change", "constraint_change", "effsize_change", "max_degree_change", "mean_degree_change", "kin_prop_change", "age_sd_change", "IQVsex_change", "IQVrace_change", "weak_freq_prop_change", "weak_dur_prop_change", "far_dist_prop_change", "drinking_prop_change", "smoking_prop_change", "no_exercise_prop_change", "bad_diet_prop_change", "health_prob_prop_change", "fdr_change", "msrs_total_change", "promis_t_score_change")]
-
-setnames(pnq_all_time_2, old = c("age.y", "sex.y", "race_eth.y", "education.y", "employment.y", "income.y", "ms.y", "characteristic.y"), new = c("age", "sex", "race_eth", "education", "employment", "income", "ms", "characteristic"))
-
-pnq_all_time_2_ms <- pnq_all_time_2 %>% filter(pnq_all_time_2$ms == "MS")
-pnq_all_time_2_control <- pnq_all_time_2 %>% filter(pnq_all_time_2$ms == "Control")
-
-#PDDS
-#Network Size
-model1.7 <- lm(fdr_change ~ network_size_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Density
-model2.7 <- lm(fdr_change ~ density_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Constraint
-model3.7 <- lm(fdr_change ~ constraint_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Effective Size
-model4.7 <- lm(fdr_change ~ effsize_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Maximum Degree
-model5.7 <- lm(fdr_change ~ max_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Mean Degree
-model6.7 <- lm(fdr_change ~ mean_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent Kin
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$kin_prop_change),]$kin_prop_change <- NA
-model7.7 <- lm(fdr_change ~ kin_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Standard deviation of age
-model8.7 <- lm(fdr_change ~ age_sd_change + age + sex + education + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Diversity of Sex
-model9.7 <- lm(fdr_change ~ IQVsex_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Diversity of Race
-model10.7 <- lm(fdr_change ~ IQVrace_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent contacted weekly or less
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$weak_freq_prop_change),]$weak_freq_prop_change <- NA
-pnq_all_time_2_ms$weak_freq_prop_change <- as.numeric(pnq_all_time_2_ms$weak_freq_prop_change)
-model11.7 <- lm(fdr_change ~ weak_freq_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent known for less than 6 years
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$weak_dur_prop_change),]$weak_dur_prop_change <- NA
-model12.7 <- lm(fdr_change ~ weak_dur_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who live over 15 miles away
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$far_dist_prop_change),]$far_dist_prop_change <- NA
-model13.7 <- lm(fdr_change ~ far_dist_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who drink
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$drinking_prop_change),]$drinking_prop_change <- NA
-model14.7 <- lm(fdr_change ~ drinking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who smoke
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$smoking_prop_change),]$smoking_prop_change <- NA
-model15.7 <- lm(fdr_change ~ smoking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent non exercisers
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$no_exercise_prop_change),]$no_exercise_prop_change <- NA
-model16.7 <- lm(fdr_change ~ no_exercise_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent bad diet
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$bad_diet_prop_change),]$bad_diet_prop_change <- NA
-model17.7 <- lm(fdr_change ~ bad_diet_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who have a negative health influence
-pnq_all_time_2_ms[is.infinite(pnq_all_time_2_ms$health_prob_prop_change),]$health_prob_prop_change <- NA
-model18.7 <- lm(fdr_change ~ health_prob_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-
-#MSRSR
-#Network Size
-model19.7 <- lm(msrs_total_change ~ network_size_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Density
-model20.7 <- lm(msrs_total_change ~ density_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Constraint
-model21.7 <- lm(msrs_total_change ~ constraint_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Effective Size
-model22.7 <- lm(msrs_total_change ~ effsize_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Maximum Degree
-model23.7 <- lm(msrs_total_change ~ max_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Mean Degree
-model24.7 <- lm(msrs_total_change ~ mean_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent Kin
-model25.7 <- lm(msrs_total_change ~ kin_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Standard deviation of age
-model26.7 <- lm(msrs_total_change ~ age_sd_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Diversity of Sex
-model27.7 <- lm(msrs_total_change ~ IQVsex_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Diversity of Race
-model28.7 <- lm(msrs_total_change ~ IQVrace_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent contacted weekly or less
-model29.7 <- lm(msrs_total_change ~ weak_freq_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent known for less than 6 years
-model30.7 <- lm(msrs_total_change ~ weak_dur_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who live over 15 miles away
-model31.7 <- lm(msrs_total_change ~ far_dist_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who drink
-model32.7 <- lm(msrs_total_change ~ drinking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who smoke
-model33.7 <- lm(msrs_total_change ~ smoking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent non exercisers
-model34.7 <- lm(msrs_total_change ~ no_exercise_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent bad diet
-model35.7 <- lm(msrs_total_change ~ bad_diet_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who have a negative health influence
-model36.7 <- lm(msrs_total_change ~ health_prob_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-
-#PROMIS
-#Network Size
-model37.7 <- lm(promis_t_score_change ~ network_size_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Density
-model38.7 <- lm(promis_t_score_change ~ density_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Constraint
-model39.7 <- lm(promis_t_score_change ~ constraint_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Effective Size
-model40.7 <- lm(promis_t_score_change ~ effsize_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Maximum Degree
-model41.7 <- lm(promis_t_score_change ~ max_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Mean Degree
-model42.7 <- lm(promis_t_score_change ~ mean_degree_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent Kin
-model43.7 <- lm(promis_t_score_change ~ kin_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Standard deviation of age
-model44.7 <- lm(promis_t_score_change ~ age_sd_change + age + sex + education + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Diversity of Sex
-model45.7 <- lm(promis_t_score_change ~ IQVsex_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Diversity of Race
-model46.7 <- lm(promis_t_score_change ~ IQVrace_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent contacted weekly or less
-model47.7 <- lm(promis_t_score_change ~ weak_freq_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent known for less than 6 years
-model48.7 <- lm(promis_t_score_change ~ weak_dur_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who live over 15 miles away
-model49.7 <- lm(promis_t_score_change ~ far_dist_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who drink
-model50.7 <- lm(promis_t_score_change ~ drinking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who smoke
-model51.7 <- lm(promis_t_score_change ~ smoking_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent non exercisers
-model52.7 <- lm(promis_t_score_change ~ no_exercise_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent bad diet
-model53.7 <- lm(promis_t_score_change ~ bad_diet_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-#Percent who have a negative health influence
-model54.7 <- lm(promis_t_score_change ~ health_prob_prop_change + age + employment + income + dx_duration + characteristic + year_change, data=pnq_all_time_2_ms)
-
-table_pdds_beta_ms_time_2 <- c(summary(model1.7)$coef[2,1], summary(model2.7)$coef[2,1], summary(model3.7)$coef[2,1], summary(model4.7)$coef[2,1], summary(model5.7)$coef[2,1], summary(model6.7)$coef[2,1], summary(model7.7)$coef[2,1], summary(model8.7)$coef[2,1], summary(model9.7)$coef[2,1], summary(model10.7)$coef[2,1], summary(model11.7)$coef[2,1], summary(model12.7)$coef[2,1], summary(model13.7)$coef[2,1], summary(model14.7)$coef[2,1], summary(model15.7)$coef[2,1], summary(model16.7)$coef[2,1], summary(model17.7)$coef[2,1], summary(model18.7)$coef[2,1])
-table_msrsr_beta_ms_time_2 <- c(summary(model19.7)$coef[2,1], summary(model20.7)$coef[2,1], summary(model21.7)$coef[2,1], summary(model22.7)$coef[2,1],summary(model23.7)$coef[2,1], summary(model24.7)$coef[2,1], summary(model25.7)$coef[2,1], summary(model26.7)$coef[2,1], summary(model27.7)$coef[2,1], summary(model28.7)$coef[2,1], summary(model29.7)$coef[2,1], summary(model30.7)$coef[2,1], summary(model31.7)$coef[2,1], summary(model32.7)$coef[2,1], summary(model33.7)$coef[2,1], summary(model34.7)$coef[2,1], summary(model35.7)$coef[2,1], summary(model36.7)$coef[2,1])
-table_promis_beta_ms_time_2 <- c(summary(model37.7)$coef[2,1],summary(model38.7)$coef[2,1],summary(model39.7)$coef[2,1],summary(model40.7)$coef[2,1], summary(model41.7)$coef[2,1],summary(model42.7)$coef[2,1],summary(model43.7)$coef[2,1],summary(model44.7)$coef[2,1], summary(model45.7)$coef[2,1],summary(model46.7)$coef[2,1],summary(model47.7)$coef[2,1],summary(model48.7)$coef[2,1], summary(model49.7)$coef[2,1],summary(model50.7)$coef[2,1],summary(model51.7)$coef[2,1],summary(model52.7)$coef[2,1], summary(model53.7)$coef[2,1],summary(model54.7)$coef[2,1])
-
-table_pdds_ci_ms_time_5 <- c(confint(model1.7, "network_size_change")[1], confint(model2.7, "density_change")[1], confint(model3.7, "constraint_change")[1], confint(model4.7, "effsize_change")[1], confint(model5.7, "max_degree_change")[1], confint(model6.7, "mean_degree_change")[1], confint(model7.7, "kin_prop_change")[1], confint(model8.7, "age_sd_change")[1], confint(model9.7, "IQVsex_change")[1], confint(model10.7, "IQVrace_change")[1], confint(model11.7, "weak_freq_prop_change")[1], confint(model12.7, "weak_dur_prop_change")[1], confint(model13.7, "far_dist_prop_change")[1], confint(model14.7, "drinking_prop_change")[1], confint(model15.7, "smoking_prop_change")[1], confint(model16.7, "no_exercise_prop_change")[1], confint(model17.7, "bad_diet_prop_change")[1], confint(model18.7, "health_prob_prop_change")[1])
-table_pdds_ci_ms_time_6 <- c(confint(model1.7, "network_size_change")[2], confint(model2.7, "density_change")[2], confint(model3.7, "constraint_change")[2], confint(model4.7, "effsize_change")[2], confint(model5.7, "max_degree_change")[2], confint(model6.7, "mean_degree_change")[2], confint(model7.7, "kin_prop_change")[2], confint(model8.7, "age_sd_change")[2], confint(model9.7, "IQVsex_change")[2], confint(model10.7, "IQVrace_change")[2], confint(model11.7, "weak_freq_prop_change")[2], confint(model12.7, "weak_dur_prop_change")[2], confint(model13.7, "far_dist_prop_change")[2], confint(model14.7, "drinking_prop_change")[2], confint(model15.7, "smoking_prop_change")[2], confint(model16.7, "no_exercise_prop_change")[2], confint(model17.7, "bad_diet_prop_change")[2], confint(model18.7, "health_prob_prop_change")[2])
-
-table_msrsr_ci_ms_time_5 <- c(confint(model19.7, "network_size_change")[1], confint(model20.7, "density_change")[1], confint(model21.7, "constraint_change")[1], confint(model22.7, "effsize_change")[1], confint(model23.7, "max_degree_change")[1], confint(model24.7, "mean_degree_change")[1], confint(model25.7, "kin_prop_change")[1], confint(model26.7, "age_sd_change")[1], confint(model27.7, "IQVsex_change")[1], confint(model28.7, "IQVrace_change")[1], confint(model29.7, "weak_freq_prop_change")[1], confint(model30.7, "weak_dur_prop_change")[1], confint(model31.7, "far_dist_prop_change")[1], confint(model32.7, "drinking_prop_change")[1], confint(model33.7, "smoking_prop_change")[1], confint(model34.7, "no_exercise_prop_change")[1], confint(model35.7, "bad_diet_prop_change")[1], confint(model36.7, "health_prob_prop_change")[1])
-table_msrsr_ci_ms_time_6 <- c(confint(model19.7, "network_size_change")[2], confint(model20.7, "density_change")[2], confint(model21.7, "constraint_change")[2], confint(model22.7, "effsize_change")[2], confint(model23.7, "max_degree_change")[2], confint(model24.7, "mean_degree_change")[2], confint(model25.7, "kin_prop_change")[2], confint(model26.7, "age_sd_change")[2], confint(model27.7, "IQVsex_change")[2], confint(model28.7, "IQVrace_change")[2], confint(model29.7, "weak_freq_prop_change")[2], confint(model30.7, "weak_dur_prop_change")[2], confint(model31.7, "far_dist_prop_change")[2], confint(model32.7, "drinking_prop_change")[2], confint(model33.7, "smoking_prop_change")[2], confint(model34.7, "no_exercise_prop_change")[2], confint(model35.7, "bad_diet_prop_change")[2], confint(model36.7, "health_prob_prop_change")[2])
-
-table_promis_ci_ms_time_5 <- c(confint(model37.7, "network_size_change")[1], confint(model38.7, "density_change")[1], confint(model39.7, "constraint_change")[1], confint(model40.7, "effsize_change")[1], confint(model41.7, "max_degree_change")[1], confint(model42.7, "mean_degree_change")[1], confint(model43.7, "kin_prop_change")[1], confint(model44.7, "age_sd_change")[1], confint(model45.7, "IQVsex_change")[1], confint(model46.7, "IQVrace_change")[1], confint(model47.7, "weak_freq_prop_change")[1], confint(model48.7, "weak_dur_prop_change")[1], confint(model49.7, "far_dist_prop_change")[1], confint(model50.7, "drinking_prop_change")[1], confint(model51.7, "smoking_prop_change")[1], confint(model52.7, "no_exercise_prop_change")[1], confint(model53.7, "bad_diet_prop_change")[1], confint(model54.7, "health_prob_prop_change")[1])
-table_promis_ci_ms_time_6 <- c(confint(model37.7, "network_size_change")[2], confint(model38.7, "density_change")[2], confint(model39.7, "constraint_change")[2], confint(model40.7, "effsize_change")[2], confint(model41.7, "max_degree_change")[2], confint(model42.7, "mean_degree_change")[2], confint(model43.7, "kin_prop_change")[2], confint(model44.7, "age_sd_change")[2], confint(model45.7, "IQVsex_change")[2], confint(model46.7, "IQVrace_change")[2], confint(model47.7, "weak_freq_prop_change")[2], confint(model48.7, "weak_dur_prop_change")[2], confint(model49.7, "far_dist_prop_change")[2], confint(model50.7, "drinking_prop_change")[2], confint(model51.7, "smoking_prop_change")[2], confint(model52.7, "no_exercise_prop_change")[2], confint(model53.7, "bad_diet_prop_change")[2], confint(model54.7, "health_prob_prop_change")[2])
-
-table_pdds_pval_ms_time_2 <- c(summary(model1.7)$coef[2,4], summary(model2.7)$coef[2,4], summary(model3.7)$coef[2,4], summary(model4.7)$coef[2,4], summary(model5.7)$coef[2,4], summary(model6.7)$coef[2,4], summary(model7.7)$coef[2,4], summary(model8.7)$coef[2,4], summary(model9.7)$coef[2,4], summary(model10.7)$coef[2,4], summary(model11.7)$coef[2,4], summary(model12.7)$coef[2,4], summary(model13.7)$coef[2,4], summary(model14.7)$coef[2,4], summary(model15.7)$coef[2,4], summary(model16.7)$coef[2,4], summary(model17.7)$coef[2,4], summary(model18.7)$coef[2,4])
-table_msrsr_pval_ms_time_2 <- c(summary(model19.7)$coef[2,4], summary(model20.7)$coef[2,4], summary(model21.7)$coef[2,4], summary(model22.7)$coef[2,4],summary(model23.7)$coef[2,4], summary(model24.7)$coef[2,4], summary(model25.7)$coef[2,4], summary(model26.7)$coef[2,4], summary(model27.7)$coef[2,4], summary(model28.7)$coef[2,4], summary(model29.7)$coef[2,4], summary(model30.7)$coef[2,4], summary(model31.7)$coef[2,4], summary(model32.7)$coef[2,4], summary(model33.7)$coef[2,4], summary(model34.7)$coef[2,4], summary(model35.7)$coef[2,4], summary(model36.7)$coef[2,4])
-table_promis_pval_ms_time_2 <- c(summary(model37.7)$coef[2,4],summary(model38.7)$coef[2,4],summary(model39.7)$coef[2,4],summary(model40.7)$coef[2,4], summary(model41.7)$coef[2,4],summary(model42.7)$coef[2,4],summary(model43.7)$coef[2,4],summary(model44.7)$coef[2,4], summary(model45.7)$coef[2,4],summary(model46.7)$coef[2,4],summary(model47.7)$coef[2,4],summary(model48.7)$coef[2,4], summary(model49.7)$coef[2,4],summary(model50.7)$coef[2,4],summary(model51.7)$coef[2,4],summary(model52.7)$coef[2,4], summary(model53.7)$coef[2,4],summary(model54.7)$coef[2,4])
-
-table_coefs_8 <- data.table(table_pdds_beta_ms_time_2, table_pdds_ci_ms_time_5, table_pdds_ci_ms_time_6, table_pdds_pval_ms_time_2, table_msrsr_beta_ms_time_2, table_msrsr_ci_ms_time_5, table_msrsr_ci_ms_time_6, table_msrsr_pval_ms_time_2, table_promis_beta_ms_time_2, table_promis_ci_ms_time_5, table_promis_ci_ms_time_6, table_promis_pval_ms_time_2)
-colnames(table_coefs_8) <- table_row_1
-rownames(table_coefs_8) <- table_col_1
-
-table_coefs_8$table_col <- table_col_1
-table_coefs_8 <- table_coefs_8[,c(13, 1:12)]
-
-# 11.	Longitudinal Analysis – Aggregate Analysis of Network and Compositional variables pre-pandemic and during pandemic – MS vs Control (adjust for covariates)
-
-pnq_all_time_3 <- merge(pnq_old_pre1, pnq_pandemic_noprior, by = "record_id", all = TRUE)
-pnq_all_time_3$network_size_change <- pnq_all_time_3$network_size.y - pnq_all_time_3$network_size.x
-pnq_all_time_3$density_change <- pnq_all_time_3$density.y - pnq_all_time_3$density.x
-pnq_all_time_3$constraint_change <- pnq_all_time_3$constraint.y - pnq_all_time_3$constraint.x
-pnq_all_time_3$effsize_change <- pnq_all_time_3$effsize.y - pnq_all_time_3$effsize.x
-pnq_all_time_3$max_degree_change <- pnq_all_time_3$max_degree.y - pnq_all_time_3$max_degree.x
-pnq_all_time_3$mean_degree_change <- pnq_all_time_3$mean_degree.y - pnq_all_time_3$mean_degree.x
-pnq_all_time_3$kin_prop_change <- pnq_all_time_3$kin_prop.y - pnq_all_time_3$kin_prop.x
-pnq_all_time_3$age_sd_change <- pnq_all_time_3$age_sd.y - pnq_all_time_3$age_sd.x
-pnq_all_time_3$IQVsex_change <- pnq_all_time_3$IQVsex.y - pnq_all_time_3$IQVsex.x
-pnq_all_time_3$IQVrace_change <- pnq_all_time_3$IQVrace.y - pnq_all_time_3$IQVrace.x
-pnq_all_time_3$weak_freq_prop_change <- pnq_all_time_3$weak_freq_prop.y - pnq_all_time_3$weak_freq_prop.x
-pnq_all_time_3$weak_dur_prop_change <- pnq_all_time_3$weak_dur_prop.y - pnq_all_time_3$weak_dur_prop.x
-pnq_all_time_3$far_dist_prop_change <- pnq_all_time_3$far_dist_prop.y - pnq_all_time_3$far_dist_prop.x
-pnq_all_time_3$drinking_prop_change <- pnq_all_time_3$drinking_prop.y - pnq_all_time_3$drinking_prop.x
-pnq_all_time_3$smoking_prop_change <- pnq_all_time_3$smoking_prop.y - pnq_all_time_3$smoking_prop.x
-pnq_all_time_3$no_exercise_prop_change <- pnq_all_time_3$no_exercise_prop.y - pnq_all_time_3$no_exercise_prop.x
-pnq_all_time_3$bad_diet_prop_change <- pnq_all_time_3$bad_diet_prop.y - pnq_all_time_3$bad_diet_prop.x
-pnq_all_time_3$health_prob_prop_change <- pnq_all_time_3$health_prob_prop.y - pnq_all_time_3$health_prob_prop.x
-
-pnq_all_time_3 <- as.data.table(pnq_all_time_3)[,c("record_id", "age.y", "sex.y", "race_eth.y", "education.y", "employment.y", "income.y", "ms.y", "characteristic.y", "network_size_change", "density_change", "constraint_change", "effsize_change", "max_degree_change", "mean_degree_change", "kin_prop_change", "age_sd_change", "IQVsex_change", "IQVrace_change", "weak_freq_prop_change", "weak_dur_prop_change", "far_dist_prop_change", "drinking_prop_change", "smoking_prop_change", "no_exercise_prop_change", "bad_diet_prop_change", "health_prob_prop_change")]
-
-setnames(pnq_all_time_3, old = c("age.y", "sex.y", "race_eth.y", "education.y", "employment.y", "income.y", "ms.y", "characteristic.y"), new = c("age", "sex", "race_eth", "education", "employment", "income", "ms", "characteristic"))
-
-pnq_all_time_3$ms <- factor(pnq_all_time_3$ms, levels = c("MS", "Control"), labels = c(1,0))
-
-#MS vs Control
-#Network Size
-model1.8 <- glm(ms ~ network_size_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Density
-model2.8 <- glm(ms ~ density_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Constraint
-model3.8 <- glm(ms ~ constraint_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Effective Size
-model4.8 <- glm(ms ~ effsize_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Maximum Degree
-model5.8 <- glm(ms ~ max_degree_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Mean Degree
-model6.8 <- glm(ms ~ mean_degree_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent Kin
-pnq_all_time_3[is.infinite(pnq_all_time_3$kin_prop_change),]$kin_prop_change <- NA
-model7.8 <- glm(ms ~ kin_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Standard deviation of age
-model8.8 <- glm(ms ~ age_sd_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Diversity of Sex
-model9.8 <- glm(ms ~ IQVsex_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Diversity of race
-model10.8 <- glm(ms ~ IQVrace_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent contacted weekly or less
-pnq_all_time_3[is.infinite(pnq_all_time_3$weak_freq_prop_change),]$weak_freq_prop_change <- NA
-pnq_all_time_3$weak_freq_prop_change <- as.numeric(pnq_all_time_3$weak_freq_prop_change)
-model11.8 <- glm(ms ~ weak_freq_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent known for less than 6 years
-pnq_all_time_3[is.infinite(pnq_all_time_3$weak_dur_prop_change),]$weak_dur_prop_change <- NA
-model12.8 <- glm(ms ~ weak_dur_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent who live over 15 miles away
-pnq_all_time_3[is.infinite(pnq_all_time_3$far_dist_prop_change),]$far_dist_prop_change <- NA
-model13.8 <- glm(ms ~ far_dist_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent who drink
-pnq_all_time_3[is.infinite(pnq_all_time_3$drinking_prop_change),]$drinking_prop_change <- NA
-model14.8 <- glm(ms ~ drinking_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent who smoke
-pnq_all_time_3[is.infinite(pnq_all_time_3$smoking_prop_change),]$smoking_prop_change <- NA
-model15.8 <- glm(ms ~ smoking_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent non exercisers
-pnq_all_time_3[is.infinite(pnq_all_time_3$no_exercise_prop_change),]$no_exercise_prop_change <- NA
-model16.8 <- glm(ms ~ no_exercise_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent bad diet
-pnq_all_time_3[is.infinite(pnq_all_time_3$bad_diet_prop_change),]$bad_diet_prop_change <- NA
-model17.8 <- glm(ms ~ bad_diet_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-#Percent who have a negative health influence
-pnq_all_time_3[is.infinite(pnq_all_time_3$health_prob_prop_change),]$health_prob_prop_change <- NA
-model18.8 <- glm(ms ~ health_prob_prop_change + age + income + characteristic, data=pnq_all_time_3, family = binomial)
-
-table_glm_beta_1 <- c(summary(model1.8)$coef[2,1], summary(model2.8)$coef[2,1], summary(model3.8)$coef[2,1], summary(model4.8)$coef[2,1], summary(model5.8)$coef[2,1], summary(model6.8)$coef[2,1], summary(model7.8)$coef[2,1], summary(model8.8)$coef[2,1], summary(model9.8)$coef[2,1], summary(model10.8)$coef[2,1], summary(model11.8)$coef[2,1], summary(model12.8)$coef[2,1], summary(model13.8)$coef[2,1], summary(model14.8)$coef[2,1], summary(model15.8)$coef[2,1], summary(model16.8)$coef[2,1], summary(model17.8)$coef[2,1], summary(model18.8)$coef[2,1])
-table_glm_ci_1 <- c(confint(model1.8, "network_size_change")[1], confint(model2.8, "density_change")[1], confint(model3.8, "constraint_change")[1], confint(model4.8, "effsize_change")[1], confint(model5.8, "max_degree_change")[1], confint(model6.8, "mean_degree_change")[1], confint(model7.8, "kin_prop_change")[1], confint(model8.8, "age_sd_change")[1], confint(model9.8, "IQVsex_change")[1], confint(model10.8, "IQVrace_change")[1], confint(model11.8, "weak_freq_prop_change")[1], confint(model12.8, "weak_dur_prop_change")[1], confint(model13.8, "far_dist_prop_change")[1], confint(model14.8, "drinking_prop_change")[1], confint(model15.8, "smoking_prop_change")[1], confint(model16.8, "no_exercise_prop_change")[1], confint(model17.8, "bad_diet_prop_change")[1], confint(model18.8, "health_prob_prop_change")[1])
-table_glm_ci_2 <- c(confint(model1.8, "network_size_change")[2], confint(model2.8, "density_change")[2], confint(model3.8, "constraint_change")[2], confint(model4.8, "effsize_change")[2], confint(model5.8, "max_degree_change")[2], confint(model6.8, "mean_degree_change")[2], confint(model7.8, "kin_prop_change")[2], confint(model8.8, "age_sd_change")[2], confint(model9.8, "IQVsex_change")[2], confint(model10.8, "IQVrace_change")[2], confint(model11.8, "weak_freq_prop_change")[2], confint(model12.8, "weak_dur_prop_change")[2], confint(model13.8, "far_dist_prop_change")[2], confint(model14.8, "drinking_prop_change")[2], confint(model15.8, "smoking_prop_change")[2], confint(model16.8, "no_exercise_prop_change")[2], confint(model17.8, "bad_diet_prop_change")[2], confint(model18.8, "health_prob_prop_change")[2])
-table_glm_pval_1 <- c(summary(model1.8)$coef[2,4], summary(model2.8)$coef[2,4], summary(model3.8)$coef[2,4], summary(model4.8)$coef[2,4], summary(model5.8)$coef[2,4], summary(model6.8)$coef[2,4], summary(model7.8)$coef[2,4], summary(model8.8)$coef[2,4], summary(model9.8)$coef[2,4], summary(model10.8)$coef[2,4], summary(model11.8)$coef[2,4], summary(model12.8)$coef[2,4], summary(model13.8)$coef[2,4], summary(model14.8)$coef[2,4], summary(model15.8)$coef[2,4], summary(model16.8)$coef[2,4], summary(model17.8)$coef[2,4], summary(model18.8)$coef[2,4])
-
-table_coefs_9 <- data.table(table_glm_beta_1, table_glm_ci_1, table_glm_ci_2, table_glm_pval_1)
-colnames(table_coefs_9) <- table_row_3
-rownames(table_coefs_9) <- table_col_1
-
-table_coefs_9$table_col <- table_col_1
-table_coefs_9 <- table_coefs_9[,c(5, 1:4)]
-
-# 12. Q-Q plot
+# 10. Q-Q plot
 
 library(lattice)
 
@@ -1722,27 +1191,3 @@ dev.off()
 tiff(filename = "QQ_Plot_PROMIS_Longitudinal.tiff", width = 3, height = 3, units="in", compression = "lzw", res=300)
 qqunif.plot(-log10(table_coefs_5$`PROMIS p value MS`), conf.alpha = 0.05, conf.points = 10000)
 dev.off()
-
-#OUTPUT
-write.csv(table1_print, file = "Demographics - All Cohorts.csv")
-write.csv(table2_print, file = "Demographics - MS vs Control.csv")
-write.csv(table_coefs_1, file = "Linear Regression 3a.csv")
-write.csv(table_coefs_3, file = "Linear Regression 4a.csv")
-write.csv(table_coefs_4, file = "MS vs Control Regression 5a.csv")
-write.csv(table_coefs_2, file = "PROMIS MS and Control Regression 4a Supplemental.csv")
-write.csv(table3_print, file = "Table 6.csv")
-write.csv(table4_print, file = "Table 7a.csv")
-write.csv(table5_print, file = "Table 7b.csv")
-write.csv(table_coefs_5, file = "Longitudinal Regression 8a.csv")
-write.csv(table_coefs_6, file = "Longitudinal Regression 8b.csv")
-write.csv(table_coefs_7, file = "Longitudinal Regression 9.csv")
-write.csv(table_coefs_8, file = "Longitudinal Regression 10.csv")
-write.csv(table_coefs_9, file = "Longitudinal Regression 11.csv")
-write.csv(table_coefs_10, file = "Longitudinal Regression Control 8a.csv")
-write.csv(table_coefs_11, file = "PROMIS MS and Control Longitudinal Regression.csv")
-
-
-
-
-
-
