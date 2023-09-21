@@ -21,6 +21,10 @@ In the cross-sectional analysis, we compared the personal networks of PwMS and c
 
 Similar to the approach taken in the cross-sectional analysis, we examined the differences in structural and compositional network variables in PwMS and control participants before and during the COVID-19 pandemic using paired T-tests. By building covariate-adjusted linear regression models, we analyzed the change in structural and compositional network variables before and during the COVID-19 pandemic in relation to the most recent PROs in PwMS. These findings were validated by comparing the change in structural and compositional network variables in relation to PROMIS Physical Function in PwMS and control participants before and during the COVID-19 pandemic.
 
+## Usage Notes
+
+Download the files: PNQ_Pandemic_Deidentified, Longitudinal PNQ Two Sample and PNQ Change into your working directory. Change the working directory in the setwd() command in the R code.
+
 ## Version
 
 R 3.6.0 was used for this analysis.
