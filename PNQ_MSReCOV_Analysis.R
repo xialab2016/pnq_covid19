@@ -7,7 +7,7 @@ library(stringr)
 library(lubridate)
 library(tableone)
 
-setwd("~/Downloads/")
+setwd("/your_working_directory/")
 pnq_pandemic <- fread("PNQ_Pandemic_Deidentified.csv")
 
 # 1.	Demographics – All Cohorts (Cohort 1 – Pitt, Cohort 2 – Pitt, Cohort 3 – Columbia, Cohort 4 – Columbia, Cohort 5 – Yale, Cohort 6 – Buffalo, Cohort 7 – Penn, Cohort 8 – GEMS)
